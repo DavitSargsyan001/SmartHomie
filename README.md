@@ -21,7 +21,7 @@ SmartHomie is a smart home application focused on energy consumption. The app pr
 
 ### Installation
 
-1. Download SmartEcoHome from the Google Play Store [Link to Play Store once you've published].
+1. Download SmartHomie from the Google Play Store [Link to Play Store once you've published].
 2. Grant necessary permissions and follow the on-screen setup.
 
 ## Usage
@@ -46,7 +46,7 @@ See also the list of [contributors](link-to-contributors-page-if-you-have-one) w
 
 ## Acknowledgments
 
-- Thank you to XYZ for the APIs.
-- Inspired by XYZ project.
+- Thank you to for the APIs.
+- Inspired by project.
 - Special thanks to our professor/mentor Afshin Amini for the guidance.
 
