@@ -1,6 +1,6 @@
 # SmartHomie
 
-SmartEcoHome is a smart home application focused on energy consumption. The app provides real-time monitoring and management of energy use across various smart home devices, offering users insight into their consumption patterns and suggestions for energy savings.
+SmartHomie is a smart home application focused on energy consumption. The app provides real-time monitoring and management of energy use across various smart home devices, offering users insight into their consumption patterns and suggestions for energy savings.
 
 ![App Logo](Logo.png)
 
