@@ -1,16 +1,17 @@
 # SmartHomie
 
-SmartHomie is a smart home application focused on energy consumption. The app provides real-time monitoring and management of energy use across various smart home devices, offering users insight into their consumption patterns and suggestions for energy savings.
+SmartHomie is a smart home application which would allow the users to connect to various smart devices, control those devices, and view their status (ON/OFF/etc.).
 
 ![App Logo](Logo.png)
 
 ## Features
 
-- **Device Integration**: Seamlessly integrate with a variety of smart devices like lights, thermostats, and more.
-- **Real-time Monitoring**: View the energy consumption of each device in real-time.
-- **Historical Data**: Analyze past energy usage to detect patterns and trends.
-- **Energy Saving Recommendations**: Get personalized suggestions based on your usage.
+- **Device Integration**: Seamlessly integrate with a variety of smart devices like smart lights, smart locks, and more.
+- **Real-time Monitoring**: View status of smart devices connected to the app.
 - **User-friendly Interface**: An intuitive design that's easy to navigate.
+- **Notifications**: Stay updated with real-time notifications related to your devices and system configurations.
+- **Scenarios/Modes**: Select from preset scenarios or modes for quick setups suiting different occasions or needs.
+- **Automation rules**: Set custom rules to automate actions based on specific conditions or triggers.
 
 ## Getting Started
 
@@ -27,8 +28,11 @@ SmartHomie is a smart home application focused on energy consumption. The app pr
 ## Usage
 
 1. **Add Device**: Navigate to the 'Add Device' section and select your device type.
-2. **Monitor**: Check the dashboard for a real-time overview of all connected devices.
-3. **Analyze**: Dive deeper into device-specific consumption data.
+2. **Monitor**: Check the dashboard for device status.
+3. **Control**: Control smart devices connected to your network from anywhere.
+4. **Modes**: Easily select modes to change the behavior of connected devices.
+5. **Create rules**: Create your own automation rules based on your preferances.
+6. **Receive information**: Receive notifications based on your preferances and device status.
 
 ## Contributing
 
@@ -46,7 +50,5 @@ See also the list of [contributors](link-to-contributors-page-if-you-have-one) w
 
 ## Acknowledgments
 
-- Thank you to for the APIs.
-- Inspired by project.
 - Special thanks to our professor/mentor Afshin Amini for the guidance.
 
