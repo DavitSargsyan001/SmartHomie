@@ -49,6 +49,7 @@
         android:id="@+id/button"
         android:layout_width="72dp"
         android:layout_height="72dp"
+        android:background="#FF9800"
         android:text="+ -"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="20sp"
@@ -71,6 +72,7 @@
         android:id="@+id/button2"
         android:layout_width="72dp"
         android:layout_height="72dp"
+        android:background="#FF9800"
         android:text="☼☽"
         android:textSize="20sp"
         tools:layout_editor_absoluteX="306dp"
@@ -80,8 +82,9 @@
         android:id="@+id/button3"
         android:layout_width="72dp"
         android:layout_height="72dp"
+        android:background="#FF9800"
         android:text="▢▢▢▢"
-        android:textSize="15sp"
+        android:textSize="24sp"
         tools:layout_editor_absoluteX="306dp"
         tools:layout_editor_absoluteY="313dp" />
 
