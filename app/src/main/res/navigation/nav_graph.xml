@@ -9,5 +9,9 @@
         android:id="@+id/mainActivity"
         android:name="com.example.smarthomie.MainActivity"
         android:label="activity_main"
-        tools:layout="@layout/activity_main" />
+        tools:layout="@layout/register" />
+    <activity
+        android:id="@+id/loginActivity"
+        android:name="com.example.smarthomie.LoginActivity"
+        android:label="LoginActivity" />
 </navigation>
