@@ -13,5 +13,6 @@
     <activity
         android:id="@+id/loginActivity"
         android:name="com.example.smarthomie.LoginActivity"
-        android:label="LoginActivity" />
+        android:label="LoginActivity"
+        tools:layout="@layout/login" />
 </navigation>
