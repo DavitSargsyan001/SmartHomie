@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainActivity">
+    app:startDestination="@id/registerActivity">
 
-    <activity
-        android:id="@+id/mainActivity"
-        android:name="com.example.smarthomie.MainActivity"
-        android:label="activity_main"
-        tools:layout="@layout/register" />
     <activity
         android:id="@+id/loginActivity"
         android:name="com.example.smarthomie.LoginActivity"
-        android:label="LoginActivity" />
+        android:label="LoginActivity"
+        tools:layout="@layout/login" />
+    <activity
+        android:id="@+id/registerActivity"
+        android:name="com.example.smarthomie.RegisterActivity"
+        android:label="register"
+        tools:layout="@layout/register" />
 </navigation>
