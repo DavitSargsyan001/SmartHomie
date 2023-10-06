@@ -15,4 +15,12 @@
         android:name="com.example.smarthomie.RegisterActivity"
         android:label="register"
         tools:layout="@layout/register" />
+    <activity
+        android:id="@+id/homePage"
+        android:label="homePage"
+        tools:layout="@layout/functions" />
+    <activity
+        android:id="@+id/addRemoveDevice"
+        android:label="addRemoveDevice"
+        tools:layout="@layout/add_remove_device" />
 </navigation>
