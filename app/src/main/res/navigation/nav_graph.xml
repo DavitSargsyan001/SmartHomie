@@ -18,9 +18,13 @@
     <activity
         android:id="@+id/homePage"
         android:label="homePage"
-        tools:layout="@layout/functions" />
+        tools:layout="@layout/home_page" />
     <activity
         android:id="@+id/addRemoveDevice"
         android:label="addRemoveDevice"
         tools:layout="@layout/add_remove_device" />
+    <activity
+        android:id="@+id/my_devices"
+        android:label="myDevices"
+        tools:layout="@layout/my_devices" />
 </navigation>
