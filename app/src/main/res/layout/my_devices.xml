@@ -6,19 +6,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/border"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="554dp" />
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/border"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="-86dp" />
+        android:layout_width="450dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="356dp"
+        android:scaleType="fitStart"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/imageView5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/border" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="414dp"
+        android:layout_height="166dp"
+        android:adjustViewBounds="false"
+        android:scaleType="fitEnd"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/border" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
