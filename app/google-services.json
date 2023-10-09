@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "655847981912",
+    "project_id": "smarthomie-b408d",
+    "storage_bucket": "smarthomie-b408d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655847981912:android:e0d47a345a68524ec41b2d",
+        "android_client_info": {
+          "package_name": "com.example.smarthomie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_zrEUMVVWyDpvMdPA6VxnHORcY5pvRS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
