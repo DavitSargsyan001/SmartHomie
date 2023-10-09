@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/registerActivity">
+
+    <activity
+        android:id="@+id/loginActivity"
+        android:name="com.example.smarthomie.LoginActivity"
+        android:label="LoginActivity"
+        tools:layout="@layout/login" />
+    <activity
+        android:id="@+id/registerActivity"
+        android:name="com.example.smarthomie.RegisterActivity"
+        android:label="register"
+        tools:layout="@layout/register" />
+    <activity
+        android:id="@+id/homePage"
+        android:label="homePage"
+        tools:layout="@layout/home_page" />
+    <activity
+        android:id="@+id/addRemoveDevice"
+        android:label="addRemoveDevice"
+        tools:layout="@layout/add_remove_device" />
+    <activity
+        android:id="@+id/my_devices"
+        android:label="myDevices"
+        tools:layout="@layout/my_devices" />
+</navigation>

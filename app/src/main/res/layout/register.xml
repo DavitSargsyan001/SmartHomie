@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".RegisterActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -69,7 +69,7 @@
         app:layout_constraintTop_toBottomOf="@+id/passwordInput" />
 
     <TextView
-        android:id="@+id/loginText"
+        android:id="@+id/LoginText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"

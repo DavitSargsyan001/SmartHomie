@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/imageView9"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/border"
+        tools:layout_editor_absoluteY="557dp" />
+
+    <ImageView
+        android:id="@+id/imageView10"
+        android:layout_width="411dp"
+        android:layout_height="280dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/border"
+        tools:layout_editor_absoluteY="-88dp" />
+
+    <ImageView
+        android:id="@+id/ivElipse"
+        android:layout_width="51dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="104dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="@+id/imageView10"
+        app:srcCompat="@drawable/elipse_" />
+
+    <ImageView
+        android:id="@+id/ivHomeImage"
+        android:layout_width="29dp"
+        android:layout_height="28dp"
+        app:layout_constraintEnd_toEndOf="@+id/ivElipse"
+        app:layout_constraintStart_toStartOf="@+id/ivElipse"
+        app:srcCompat="@drawable/home_duotone"
+        tools:layout_editor_absoluteY="49dp" />
+
+    <TextView
+        android:id="@+id/tvScenario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SCENARIO "
+        android:textSize="48sp"
+        android:visibility="visible"
+        android:textColor="@color/black"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_editor_absoluteY="115dp"
+
+
+        />
+
+    <Button
+        android:id="@+id/btnHomeScenario"
+        android:layout_width="359dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="4dp"
+        android:drawableRight="@drawable/home"
+        android:text="Home"
+        android:textAlignment="textStart"
+        android:textAllCaps="false"
+
+        android:textSize="28sp"
+        app:layout_constraintBottom_toTopOf="@+id/btnAwayScenario"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView10"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/btnAwayScenario"
+        android:layout_width="359dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="32dp"
+        android:text="Away"
+        android:drawableRight="@drawable/exit"
+        android:textAlignment="textStart"
+        android:textAllCaps="false"
+        android:textSize="28sp"
+
+        app:layout_constraintBottom_toTopOf="@+id/btnSleepScenario"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.519"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnSleepScenario"
+        android:layout_width="359dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="32dp"
+        android:text="Sleep"
+        android:textAlignment="textStart"
+        android:textAllCaps="false"
+        android:textSize="28sp"
+        android:drawableRight="@drawable/moon"
+        app:layout_constraintBottom_toTopOf="@+id/btnEcoScenario"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.519"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnEcoScenario"
+        android:layout_width="359dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="32dp"
+        android:text="Eco "
+        android:textAlignment="textStart"
+        android:textAllCaps="false"
+        android:textSize="28sp"
+        android:drawableRight="@drawable/_19_leaf_1"
+        app:layout_constraintBottom_toTopOf="@+id/imageView9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnCustomScenario"
+        android:layout_width="359dp"
+        android:layout_height="60dp"
+        android:text="Add Custom"
+        android:textAlignment="textStart"
+        android:textAllCaps="false"
+        android:textSize="28sp"
+        android:drawableRight="@drawable/add_custonm_"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView9" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
