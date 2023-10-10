@@ -1,7 +1,7 @@
 package com.example.smarthomie
 
 class User {
-    val id : int = 0
+    val id : Int = 0
     val username : String = ""
     val email: String = ""
     val passwordHash: String = ""

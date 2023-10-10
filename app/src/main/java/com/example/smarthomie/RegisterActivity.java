@@ -2,77 +2,87 @@ package com.example.smarthomie;
 
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private EditText email;
-    private EditText password;
-    private Button register;
+    private EditText emailTV;
+    private EditText passwordTV;
+    private Button registrate;
 
-    private FirebaseAuth auth;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
-        TextView btn = findViewById(R.id.LoginText);
-        Button but = (Button)findViewById(R.id.registerButton);
 
-        btn.setOnClickListener(this);
-        but.setOnClickListener(this);
+        mAuth = FirebaseAuth.getInstance();
 
-        email = findViewById(R.id.emailInput);
-        password =  findViewById(R.id.passwordInput);
-        register = findViewById(R.id.registerButton);
+        initializeUI();
 
-        auth = FirebaseAuth.getInstance();
-
-        register.setOnClickListener(new View.OnClickListener() {
+        regBtn.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View view) {
-                String txt_email = email.getText().toString();
-                String txt_password = password.getText().toString();
-
-                if (TextUtils.isEmpty( txt_email) || TextUtils.isEmpty(txt_password)){
-                    Toast.makeText( RegisterActivity.this, "Empty crcedentials!", Toast.LENGTH_SHORT).show();
-                } else if (txt_password.length() < 6) {
-                    Toast.makeText( RegisterActivity.this, "Password too short!", Toast.LENGTH_SHORT).show();
-                } else{
-                    registerUser(txt_email , txt_password);
-                }
-
+            public void onClick(View v) {
+                registerNewUser();
             }
+        });
+
+    }
+
+    private void registerNewUser(){
+        String email, password;
+        email = emailTV.getText().toString();
+        password = passwordTV.getText().toString();
+
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(getApplicationContext(), "Please enter email...", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (TextUtils.isEmpty(password)) {
+            Toast.makeText(getApplicationContext(), "Please enter password!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>(){
+           @Override
+           public void onComplete(@NonNull Task<AuthResult> task) {
+               if (task.isSuccessful()){
+                   Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
+                   progressBar.setVisibility(View.GONE);
+
+                   Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                   startActivity(intent);
+               }
+               else{
+                   Toast.makeText(getApplicationContext(), "Registration failed! Please try again", Toast.LENGTH_LONG).show();
+                   progressBar.setVisibility(View.GONE);
+               }
+           }
         });
     }
 
-    private void registerUser(String email, String password) {
-
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this ,new onCompleteListener<AuthResult>(){
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    Toast.makeText( RegisterActivity.this, "Registering user successfull" , Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText( RegisterActivity.this, "Registering failed!" , Toast.LENGTH_SHORT).show();
-                }
-            }
-        })
+    private void initializeUI(){
+        emailTV = findViewById(R.id.emailInput);
+        passwordTV = findViewById(R.id.passwordInput);
+        regBtn = findViewById(R.id.registerButton);
 
     }
 
-
-    @Override
+   /* @Override
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.LoginText) {
@@ -83,6 +93,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-
+*/
 
 }
