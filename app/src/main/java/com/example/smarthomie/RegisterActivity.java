@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
-
+        TextView btn = findViewById(R.id.LoginText);
         mAuth = FirebaseAuth.getInstance();
 
         initializeUI();
@@ -40,6 +41,13 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 registerNewUser();
             }
+        });
+
+        btn.setOnClickListener(new View.OnClickListener() {
+           @Override
+            public void onClick(View v) {
+               startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+           }
         });
 
     }
@@ -82,5 +90,6 @@ public class RegisterActivity extends AppCompatActivity {
         regBtn = findViewById(R.id.registerButton);
 
     }
+
 
 }
