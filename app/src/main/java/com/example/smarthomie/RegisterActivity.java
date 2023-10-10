@@ -17,8 +17,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-//public class LoginActivity extends AppCompatActivity implements View.OnClickListener
-public class RegisterActivity extends AppCompatActivity {//implements View.OnClickListener{
+
+public class RegisterActivity extends AppCompatActivity {
 
     private EditText emailTV;
     private EditText passwordTV;
@@ -63,14 +63,14 @@ public class RegisterActivity extends AppCompatActivity {//implements View.OnCli
            public void onComplete(@NonNull Task<AuthResult> task) {
                if (task.isSuccessful()){
                    Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
-                   //progressBar.setVisibility(View.GONE);
+
 
                    Intent intent = new Intent(RegisterActivity.this, homePage.class);
                    startActivity(intent);
                }
                else{
                    Toast.makeText(getApplicationContext(), "Registration failed! Please try again", Toast.LENGTH_LONG).show();
-                   //progressBar.setVisibility(View.GONE);
+
                }
            }
         });
@@ -82,18 +82,5 @@ public class RegisterActivity extends AppCompatActivity {//implements View.OnCli
         regBtn = findViewById(R.id.registerButton);
 
     }
-
-   /* @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        if (id == R.id.LoginText) {
-            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-        }
-        else if (id == R.id.registerButton) {
-            startActivity(new Intent(RegisterActivity.this, MyDevices.class));
-        }
-    }
-
-*/
 
 }
