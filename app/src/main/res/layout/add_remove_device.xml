@@ -1,7 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/addRemoveDevice"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="251dp"
+        android:layout_height="48dp"
+        android:text="Remove device"
+        tools:layout_editor_absoluteX="80dp"
+        tools:layout_editor_absoluteY="568dp" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="411dp"
+        android:layout_height="61dp"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/border"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="670dp" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="411dp"
+        android:layout_height="61dp"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/border"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="251dp"
+        android:layout_height="48dp"
+        android:text="Add device"
+        tools:layout_editor_absoluteX="80dp"
+        tools:layout_editor_absoluteY="497dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
