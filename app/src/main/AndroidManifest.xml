@@ -28,6 +28,7 @@
         <activity android:name=".LoginActivity"></activity>
         <activity android:name=".MyDevices"></activity>
         <activity android:name=".homePage"></activity>
+        <activity android:name=".Scenarios"></activity>
     </application>
 
 </manifest>
