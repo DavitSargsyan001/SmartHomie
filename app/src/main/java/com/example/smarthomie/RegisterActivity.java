@@ -17,8 +17,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.w3c.dom.Text;
+import java.util.HashMap;
+import java.util.Map;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import android.util.Log;
 
 
 public class RegisterActivity extends AppCompatActivity {
@@ -28,6 +33,13 @@ public class RegisterActivity extends AppCompatActivity {
     private Button regBtn;
 
     private FirebaseAuth mAuth;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static final String TAG = "RegisterActivity";
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +86,25 @@ public class RegisterActivity extends AppCompatActivity {
                if (task.isSuccessful()){
                    Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
 
+                   Map<String, Object> user = new HashMap<>();
+                   user.put("email", email);
+
+                   db.collection("Users").document(mAuth.getCurrentUser().getUid())
+                           .set(user)
+                           .addOnSuccessListener(new OnSuccessListener<Void>() {
+                               @Override
+                               public void onSuccess(Void aVoid) {
+                                   Log.d(TAG, "DocumentSnapshot successfully written!");
+                                   Intent intent = new Intent(RegisterActivity.this, homePage.class);
+                                   startActivity(intent);
+                               }
+                           })
+                           .addOnFailureListener(new OnFailureListener() {
+                               @Override
+                               public void onFailure(@NonNull Exception e) {
+                                   Log.w(TAG, "Error writing document", e);
+                               }
+                           });
 
                    Intent intent = new Intent(RegisterActivity.this, homePage.class);
                    startActivity(intent);
