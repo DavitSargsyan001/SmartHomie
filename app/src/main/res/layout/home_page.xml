@@ -7,6 +7,20 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/textView"
+        android:layout_width="275dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="160dp"
+        android:background="#A8A8A8"
+        android:text="My Devices"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <TextView
         android:id="@+id/textView3"
         android:layout_width="275dp"
         android:layout_height="wrap_content"
@@ -106,5 +120,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/button2" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
