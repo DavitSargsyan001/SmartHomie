@@ -1,11 +1,9 @@
 package com.example.smarthomie
 
 class User {
-    val id : int = 0
-    val username : String = ""
+    val id : Int = 0
     val email: String = ""
     val passwordHash: String = ""
-
     //var preferences: UserPreferences?
 
     // Assuming listOfDevices holds device IDs or references to Device objects.
