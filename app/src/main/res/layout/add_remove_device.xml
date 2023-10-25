@@ -52,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.718" />
+        app:layout_constraintVertical_bias="0.765" />
 
     <ImageButton
         android:id="@+id/ibHome2"
@@ -60,10 +60,16 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/tvScenario"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.721"
         app:srcCompat="@drawable/home_duotone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="411dp"
+        android:layout_height="446dp"
+        tools:layout_editor_absoluteX="-3dp"
+        tools:layout_editor_absoluteY="61dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

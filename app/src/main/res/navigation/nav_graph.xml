@@ -27,4 +27,8 @@
         android:id="@+id/my_devices"
         android:label="myDevices"
         tools:layout="@layout/my_devices" />
+    <activity
+        android:id="@+id/scenarios"
+        android:name="com.example.smarthomie.Scenarios"
+        android:label="Scenarios" />
 </navigation>
