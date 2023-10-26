@@ -30,6 +30,7 @@
         <activity android:name=".homePage"></activity>
         <activity android:name=".Scenarios"></activity>
         <activity android:name=".AddRemoveActivity"></activity>
+        
 
     </application>
 
