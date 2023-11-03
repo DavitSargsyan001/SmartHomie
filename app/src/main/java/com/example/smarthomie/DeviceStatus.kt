@@ -25,3 +25,7 @@ enum class SensorStatus : DeviceStatus {
 enum class CoffeeMachineStatus : DeviceStatus {
     BREWING, WARMING, STANDBY, OFF, ERROR, NEEDS_REFILL, CLEANING
 }
+
+enum class HueBridgeStatus : DeviceStatus {
+    CONNECTED, DISCONNECTED, INITIALIZING, UPDATING, ERROR, LINK_BUTTON_PRESSED, DEVICE_CONNECTED, NO_DEVICES_CONNECTED
+}

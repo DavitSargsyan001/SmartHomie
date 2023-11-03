@@ -18,7 +18,8 @@ class Device {
                 THERMOSTAT("Thermostat"),
                 CAMERA("Camera"),
                 SENSOR("Sensor"),
-                COFFEEMACHINE("Coffee Machine");
+                COFFEEMACHINE("Coffee Machine"),
+                HUE_BRIDGE("Hue Bridge");
         }
 
         fun updateStatus(newStatus: DeviceStatus){
@@ -60,6 +61,13 @@ class Device {
                         }
                         DeviceType.COFFEEMACHINE -> {
                                 if (newStatus is CoffeeMachineStatus) {
+                                        status = newStatus
+                                } else {
+                                        throw IllegalArgumentException("Invalid status for a coffee machine")
+                                }
+                        }
+                        DeviceType.HUE_BRIDGE -> {
+                                if (newStatus is HueBridgeStatus) {
                                         status = newStatus
                                 } else {
                                         throw IllegalArgumentException("Invalid status for a coffee machine")

@@ -44,7 +44,7 @@
         app:srcCompat="@drawable/border" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/addbutton"
         android:layout_width="251dp"
         android:layout_height="48dp"
         android:text="Add device"

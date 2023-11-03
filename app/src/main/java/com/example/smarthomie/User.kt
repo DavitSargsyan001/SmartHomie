@@ -22,6 +22,11 @@ class User {
         // If Device has an owner property: device.owner = null
     }
 
+
+
+
+
+
 }
 
 //Register
