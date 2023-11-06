@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.TextView;
+import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -88,6 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                    Map<String, Object> user = new HashMap<>();
                    user.put("email", email);
+                   user.put("listOfDevices", new ArrayList<>());
 
                    db.collection("Users").document(mAuth.getCurrentUser().getUid())
                            .set(user)
