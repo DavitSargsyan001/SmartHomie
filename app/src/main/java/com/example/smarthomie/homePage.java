@@ -19,6 +19,9 @@ public class homePage extends AppCompatActivity implements View.OnClickListener 
         // Step 1: Find the button and set the click listener
         Button addRemoveButton = (Button)findViewById(R.id.button);
         addRemoveButton.setOnClickListener(this);
+
+        Button myDevicesButton = (Button)findViewById(R.id.button5);
+        myDevicesButton.setOnClickListener(this);
     }
 
     @Override
@@ -31,6 +34,10 @@ public class homePage extends AppCompatActivity implements View.OnClickListener 
         // Step 2: Handle the button click to start the desired activity
         if (id == R.id.button) {
             startActivity(new Intent(homePage.this, AddRemoveActivity.class));
+        }
+
+        if (id == R.id.button5) {
+            startActivity(new Intent(homePage.this, MyDevices.class));
         }
     }
 }
