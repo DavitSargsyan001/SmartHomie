@@ -75,11 +75,11 @@ public class AddRemoveActivity extends AppCompatActivity{
                                        Log.d("AddDevice", "Device document exists"); // Log at the beginning of the onClick
                                        String deviceType = deviceDocument.getString("type");
                                        if ("HUE_BRIDGE".equals(deviceType)) {
-                                           Log.d("AddDevice", "We don't have any HUE bridges wtf"); // Log at the beginning of the onClick
+                                           Log.d("AddDevice", "HUE bridge already exists in user's account"); // Log at the beginning of the onClick
                                            //This device is a hue bridge. go to adding devices
                                            //AlertDialog dialog = createDialog();
                                        } else {
-                                           Log.d("AddDevice", "We are at the correct place"); // Log at the beginning of the onClick
+                                           Log.d("AddDevice", "User does not have Hue bridge and we will force him to add it"); // Log at the beginning of the onClick
                                            //Force user to add Hue bridge to the App
                                            AlertDialog dialog = createDialog();
                                            dialog.show();
@@ -116,6 +116,8 @@ public class AddRemoveActivity extends AppCompatActivity{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(AddRemoveActivity.this,"Redirecting",Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(AddRemoveActivity.this, HueBridgeAddingPageActivity.class);
+                startActivity(intent);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
