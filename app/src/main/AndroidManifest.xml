@@ -41,6 +41,7 @@
         <activity android:name=".Scenarios"></activity>
         <activity android:name=".AddRemoveActivity"></activity>
         <activity android:name=".HueBridgeAddingPageActivity"></activity>
+        <activity android:name=".PhilipsHueController"></activity>
 
     </application>
 
