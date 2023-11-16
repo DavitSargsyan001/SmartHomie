@@ -18,7 +18,7 @@ import android.util.Log
 
 class HueBridgeAddingPageActivity : AppCompatActivity() {
 
-    // SERVICE_TYPE is the service type string used by the Hue Bridge for mDNS advertisement.
+
     private val serviceTypeHue = "_hue._tcp."
 
     // nsdManager is a system service that helps with network service discovery.
