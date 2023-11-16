@@ -17,6 +17,18 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import io.github.zeroone3010.yahueapi.Color;
+import io.github.zeroone3010.yahueapi.HueBridge;
+import io.github.zeroone3010.yahueapi.HueBridgeConnectionBuilder;
+import io.github.zeroone3010.yahueapi.v2.*;
+import io.github.zeroone3010.yahueapi.discovery.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+
 public class PhilipsHueController extends AppCompatActivity {
 
     public static void main(String[] args) {
@@ -43,7 +55,17 @@ public class PhilipsHueController extends AppCompatActivity {
 
     public static void turnOnLight(SSLContext sslContext) {
         try {
-            String endpoint = "https://192.168.68.63/api/RRL9E9N5KzHKbUiZ-FYXz--tUxmHUaW8mByLQREa/lights/1/state";
+        /*    final String bridgeIp = "192.168.1.201"; // Fill in the IP address of your Bridge
+            final String appName = "MyFirstHueApp"; // Fill in the name of your application
+            final CompletableFuture<String> apiKey = new HueBridgeConnectionBuilder(bridgeIp).initializeApiConnection(appName);
+// Push the button on your Hue Bridge to resolve the apiKey future:
+            final String key = apiKey.get();
+            final Hue hue = new Hue(bridgeIp, key);
+
+
+            String endpoint = "https://192.168.1.201/api/" + key + "/lights/3/state";
+           */
+            String endpoint = "https://192.168.1.201/api/5WzLth1toz5c1B2frzZnCPMF3AwmExqGr81SOwM8/lights/3/state";
             URL url = new URL(endpoint);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 

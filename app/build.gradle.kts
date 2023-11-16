@@ -38,6 +38,7 @@ android {
 
 dependencies {
 
+    implementation("io.github.zeroone3010:yetanotherhueapi:3.0.0-beta-2")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
