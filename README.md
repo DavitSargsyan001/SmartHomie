@@ -18,7 +18,7 @@ SmartHomie is a comprehensive home automation application designed to transform 
 ### Prerequisites
 
 - Android device running Android version X.X or newer.
-- Smart devices compatible with [List of Supported Devices/APIs].
+- Currently working with only Philips HUE products.
 
 ### Installation
 
