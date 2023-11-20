@@ -15,6 +15,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 
 class HueBridgeAddingPageActivity : AppCompatActivity() {
 
@@ -25,6 +26,9 @@ class HueBridgeAddingPageActivity : AppCompatActivity() {
     private lateinit var nsdManager: NsdManager
 
     private val discoveryTimeoutMillis: Long = 30000 // 30 seconds to search
+
+    private var discoveryDialog: AlertDialog? = null
+    private var discoveryHandler: Handler? = null
 
     // discoveryListener is responsible for handling discovery events like service found or lost.
     private val discoveryListener = object : NsdManager.DiscoveryListener {
@@ -50,6 +54,9 @@ class HueBridgeAddingPageActivity : AppCompatActivity() {
                 Log.d("mDNS", "Found Hue Bridge service")
                 // If a service matching the Hue Bridge type is found, try to resolve it to get more info.
                 nsdManager.resolveService(service, createResolveListener())
+                runOnUiThread {
+                    discoveryDialog?.dismiss()
+                }
             }
         }
 
@@ -71,6 +78,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity() {
             // When the button is clicked, check for a Wi-Fi connection.
             if (isConnectedToWifi()) {
                 // If the device is connected to Wi-Fi, start the discovery process.
+                showLoadingDialog()
                 startDiscovery()
             } else {
                 // If the device is not connected to Wi-Fi, show Wi-Fi settings for the user to connect.
@@ -134,5 +142,43 @@ class HueBridgeAddingPageActivity : AppCompatActivity() {
         if (::nsdManager.isInitialized) {
             nsdManager.stopServiceDiscovery(discoveryListener)
         }
+        discoveryDialog?.dismiss()
+    }
+
+    private fun showLoadingDialog(){
+        val builder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+
+        builder.setView(inflater.inflate(R.layout.loading_dialog, null))
+        builder.setCancelable(false)
+
+        builder.setNegativeButton("Cancel"){ dialog, which ->
+            stopDiscovery()
+            Toast.makeText(this, "Discovery canceled", Toast.LENGTH_SHORT).show()
+        }
+
+        discoveryDialog = builder.create()
+        discoveryDialog?.show()
+
+        discoveryHandler = Handler(Looper.getMainLooper()).apply {
+            postDelayed({
+                if(discoveryDialog?.isShowing == true) {
+                    stopDiscovery()
+                    discoveryDialog?.dismiss()
+                    Toast.makeText(this@HueBridgeAddingPageActivity, "Discovery timed out", Toast.LENGTH_SHORT).show()
+                }
+            }, 30000)
+        }
+    }
+
+    private fun stopDiscovery() {
+        discoveryHandler?.removeCallbacksAndMessages(null)
+        nsdManager.stopServiceDiscovery(discoveryListener)
+        discoveryDialog?.dismiss()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopDiscovery()
     }
 }
