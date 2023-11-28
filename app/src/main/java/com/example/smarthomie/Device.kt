@@ -72,6 +72,44 @@ class Device {
         }
 
 
+        fun discoverDevices() {
+                val ssdpRequest =
+                        "M-SEARCH * HTTP/1.1\r\n" +
+                        "HOST: 239.255.250:1900\r\n" +
+                        "MAN: \"ssdp:discover\"\r\n" +
+                        "MX: 1\r\n" +
+                        "ST: ssdp:all\r\n\r\n"
+
+                val sendData = ssdpRequest.toByteArray(Charset.UTF_8)
+
+                val sendPacket = DatagramPacket(
+                        sendData,
+                        sendData.size,
+                        InetAddress.getByName("239.255.255.250"),
+                        1900
+                )
+
+                val socket = DatagramSocket()
+                socket.send(sendPacket)
+        }
+
+        fun listenForResponses(){
+                val socket = DatagramSocket(1900)
+
+                while (true){ // Continue this in a loop to keep listening for responses
+                        val buffer = ByteArray(1024)
+                        val packet = DatagramPacket(buffer, buffer.size)
+
+                        socket.receive(packet)
+
+                        val response = String(packet.data, 0, packet.length)
+
+                        //here we could parse the response to see if it's from a device we are interested in (HUE bridge)
+                        //Typically, you'll look for specific header or content in the response to identify the device
+                }
+        }
+
+
 
 
 }
