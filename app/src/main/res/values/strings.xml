@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Smart Homie</string>
+    <string-array name="Device_List">
+        <item>Smart Plug</item>
+        <item>Light Bulb</item>
+    </string-array>
 </resources>
