@@ -35,15 +35,15 @@ public class PhilipsHueController extends AppCompatActivity {
         SSLContext sslContext = createTrustAllSSLContext();
 
         // Turn the light on
-        turnOnLight(sslContext);
+        turnOnLight(sslContext, lightId);
 
         // Change the brightness of the light
-        setBrightness(baseUrl, lightId, 127, sslContext);
+        setBrightness(lightId, "127", sslContext);
     }
 
-    public static void turnOnLight(SSLContext sslContext) {
+    public static void turnOnLight(SSLContext sslContext, String light) {
         try {
-            String endpoint = "https://192.168.68.63/api/RRL9E9N5KzHKbUiZ-FYXz--tUxmHUaW8mByLQREa/lights/1/state";
+            String endpoint = "https://192.168.68.63/api/RRL9E9N5KzHKbUiZ-FYXz--tUxmHUaW8mByLQREa/lights/" + light + "/state";
             URL url = new URL(endpoint);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
@@ -74,9 +74,41 @@ public class PhilipsHueController extends AppCompatActivity {
         }
     }
 
-    public static void setBrightness(String baseUrl, String lightId, int brightness, SSLContext sslContext) {
+    public static void turnOffLight(SSLContext sslContext, String light) {
         try {
-            String endpoint = baseUrl + "/lights/" + lightId + "/state";
+            String endpoint = "https://192.168.68.63/api/RRL9E9N5KzHKbUiZ-FYXz--tUxmHUaW8mByLQREa/lights/" + light + "/state";
+            URL url = new URL(endpoint);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+
+            // Set the SSL context to trust all certificates
+            connection.setSSLSocketFactory(sslContext.getSocketFactory());
+
+            connection.setRequestMethod("PUT");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            String requestBody = "{\"on\":false}";
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = requestBody.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+                System.out.println("Light turned on successfully.");
+            } else {
+                System.err.println("Failed to turn on the light. Response code: " + responseCode);
+            }
+
+            connection.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static void setBrightness(String light, String brightness, SSLContext sslContext) {
+        try {
+            String endpoint = "https://192.168.68.63/api/RRL9E9N5KzHKbUiZ-FYXz--tUxmHUaW8mByLQREa/lights/" + light + "/state";
             URL url = new URL(endpoint);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
