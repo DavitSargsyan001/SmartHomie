@@ -17,77 +17,34 @@ import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 
-class HueBridgeAddingPageActivity : AppCompatActivity() {
-
-    //test
-    private val serviceTypeHue = "_hue._tcp."
-
-    // nsdManager is a system service that helps with network service discovery.
+class HueBridgeAddingPageActivity : AppCompatActivity(){
     private lateinit var nsdManager: NsdManager
+    private val serviceTypeHue = "_hue._tcp."
+    private var isDiscoveryRunning = false
+    private var progressDialog: AlertDialog? = null
 
-    private val discoveryTimeoutMillis: Long = 30000 // 30 seconds to search
-
-    private var discoveryDialog: AlertDialog? = null
-    private var discoveryHandler: Handler? = null
-
-    // discoveryListener is responsible for handling discovery events like service found or lost.
-    private val discoveryListener = object : NsdManager.DiscoveryListener {
-        override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) {
-            Log.e("mDNS", "Discovery start failed: Error code:$errorCode")
-        }
-
-        override fun onStopDiscoveryFailed(serviceType: String?, errorCode: Int) {
-            Log.e("mDNS", "Discovery stop failed: Error code:$errorCode")
-        }
-
-        override fun onDiscoveryStarted(serviceType: String?) {
-            Log.d("mDNS", "Service discovery started")
-        }
-
-        override fun onDiscoveryStopped(serviceType: String?) {
-            Log.i("mDNS", "Service discovery stopped")
-        }
-
-        override fun onServiceFound(service: NsdServiceInfo?) {
-            Log.d("mDNS", "Service discovery success: $service")
-            if (service?.serviceType == serviceTypeHue) {
-                Log.d("mDNS", "Found Hue Bridge service")
-                // If a service matching the Hue Bridge type is found, try to resolve it to get more info.
-                nsdManager.resolveService(service, createResolveListener())
-                runOnUiThread {
-                    discoveryDialog?.dismiss()
-                }
-            }
-        }
-
-        override fun onServiceLost(service: NsdServiceInfo?) {
-            Log.e("mDNS", "Service lost: $service")
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.hue_bridge_adding_page)
 
-        // Get the nsdManager from the system services.
         nsdManager = getSystemService(Context.NSD_SERVICE) as NsdManager
 
-        // Get a reference to the button and set an onClickListener on it.
         val searchBridgeButton: Button = findViewById(R.id.NetworkDiscoveryButton)
+
         searchBridgeButton.setOnClickListener {
-            // When the button is clicked, check for a Wi-Fi connection.
-            if (isConnectedToWifi()) {
-                // If the device is connected to Wi-Fi, start the discovery process.
-                showLoadingDialog()
-                startDiscovery()
-            } else {
-                // If the device is not connected to Wi-Fi, show Wi-Fi settings for the user to connect.
-                showWifiSettings()
-            }
+            startDiscoveryProcess()
         }
     }
 
-    // This function checks if the device is currently connected to a Wi-Fi network.
+    private fun startDiscoveryProcess() {
+        if (isConnectedToWifi()) {
+            startDiscovery()
+        } else {
+            showWifiSettings()// invoke the wifi menu to connect to wifi
+        }
+    }
+
     private fun isConnectedToWifi(): Boolean {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
@@ -95,37 +52,6 @@ class HueBridgeAddingPageActivity : AppCompatActivity() {
         return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
     }
 
-    // This function starts the service discovery process using the nsdManager.
-    private fun startDiscovery() {
-        Log.d("mDNS", "Inside startDiscovery()")
-        nsdManager.discoverServices(serviceTypeHue, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            nsdManager.stopServiceDiscovery(discoveryListener)
-            //Notify the user that the discovery process has timed out
-            Toast.makeText(this, "Discovery timed out", Toast.LENGTH_LONG).show()
-        }, discoveryTimeoutMillis)
-    }
-
-    // This function creates and returns an NsdManager.ResolveListener to handle resolving a service.
-    private fun createResolveListener(): NsdManager.ResolveListener {
-        return object : NsdManager.ResolveListener {
-            override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
-                Log.e("mDNS", "Resolve failed: $errorCode")
-            }
-
-            override fun onServiceResolved(serviceInfo: NsdServiceInfo?) {
-                Log.d("mDNS", "Resolve Succeeded. $serviceInfo")
-                if (serviceInfo != null) {
-                    Log.d("mDNS", "Got the IP. $serviceInfo")
-                    val hostAddress = serviceInfo.host.hostAddress
-                    // The Hue Bridge's IP address can be used here to connect to the bridge.
-                }
-            }
-        }
-    }
-
-    // This function shows the Wi-Fi settings screen so the user can connect to Wi-Fi.
     private fun showWifiSettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val panelIntent = Intent(Settings.Panel.ACTION_WIFI)
@@ -136,49 +62,120 @@ class HueBridgeAddingPageActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // When the activity is destroyed, stop the service discovery to clean up resources.
-        if (::nsdManager.isInitialized) {
-            nsdManager.stopServiceDiscovery(discoveryListener)
-        }
-        discoveryDialog?.dismiss()
-    }
-
-    private fun showLoadingDialog(){
-        val builder = AlertDialog.Builder(this)
-        val inflater = layoutInflater
-
-        builder.setView(inflater.inflate(R.layout.loading_dialog, null))
-        builder.setCancelable(false)
-
-        builder.setNegativeButton("Cancel"){ dialog, which ->
-            stopDiscovery()
-            Toast.makeText(this, "Discovery canceled", Toast.LENGTH_SHORT).show()
-        }
-
-        discoveryDialog = builder.create()
-        discoveryDialog?.show()
-
-        discoveryHandler = Handler(Looper.getMainLooper()).apply {
-            postDelayed({
-                if(discoveryDialog?.isShowing == true) {
-                    stopDiscovery()
-                    discoveryDialog?.dismiss()
-                    Toast.makeText(this@HueBridgeAddingPageActivity, "Discovery timed out", Toast.LENGTH_SHORT).show()
-                }
-            }, 30000)
+    private fun startDiscovery() {
+        if(!isDiscoveryRunning) {
+            nsdManager.discoverServices(serviceTypeHue, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
+            isDiscoveryRunning = true
+            // Start loading dialog
+            showLoadingIndicator()
         }
     }
 
     private fun stopDiscovery() {
-        discoveryHandler?.removeCallbacksAndMessages(null)
-        nsdManager.stopServiceDiscovery(discoveryListener)
-        discoveryDialog?.dismiss()
+        if (isDiscoveryRunning) {
+            nsdManager.stopServiceDiscovery(discoveryListener)
+            isDiscoveryRunning = false
+            //Dismiss loading dialog
+            hideLoadingIndicator()
+        }
     }
 
-    override fun onPause() {
+    private  val discoveryListener = object : NsdManager.DiscoveryListener {
+        override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) {
+            // In case Discovery Fails
+
+            Log.e("mDNS", "Discovery start failed: Error code:$errorCode")
+        }
+
+        override fun onStopDiscoveryFailed(serviceType: String?, errorCode: Int) {
+            // In case Stop fails
+
+            Log.e("mDNS", "Discovery stop failed: Error code:$errorCode")
+        }
+
+        override fun onDiscoveryStarted(serviceType: String?) {
+            // Discovery started
+
+            Log.d("mDNS", "Service discovery started")
+        }
+
+        override fun onDiscoveryStopped(p0: String?) {
+
+            Log.d("mDNS", "Service discovery stopped")
+        }
+
+        override fun onServiceFound(service: NsdServiceInfo?) {
+            Log.d("mDNS", "Service found")
+            if (service?.serviceType == serviceTypeHue) {
+                Log.d("mDNS", "Inside If statement of service found")
+                runOnUiThread {
+                    //Hue bridge found
+                    showAddBridgeDialog()
+                    stopDiscovery()
+                }
+            }
+        }
+
+        override fun onServiceLost(service: NsdServiceInfo?) {
+            // In case service is lost
+            Log.d("mDNS", "On service Lost")
+
+        }
+    }
+
+    private fun showAddBridgeDialog() {
+        Log.d("mDNS", "Inside show add bridge dialog")
+        AlertDialog.Builder(this)
+            .setTitle("Hue Bridge Found")
+            .setMessage("A Hue Bridge has been found. Add it to your smart home setup?")
+            .setPositiveButton("Add") { dialog, which ->
+                // Handling hue bridge adding
+                addUserBridgeToSetup()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    override  fun onPause() {
+        Log.d("mDNS", "At on Pause start")
         super.onPause()
         stopDiscovery()
+        Log.d("mDNS", "At on Pause end")
     }
+
+    override fun onDestroy() {
+        Log.d("mDNS", "At on Destroy start")
+        super.onDestroy()
+        stopDiscovery()
+        Log.d("mDNS", "At on Destroy end")
+    }
+
+    private fun addUserBridgeToSetup() {
+        Log.d("mDNS", "In add User Bridge to User's set up")
+    }
+
+    override fun onBackPressed() {
+        Log.d("mDNS", "Back button pressed going back to Add/remove device page")
+        super.onBackPressed()
+
+    }
+
+    private fun showLoadingIndicator() {
+        val builder = AlertDialog.Builder(this)
+        // Use a custom layout with a progress bar, or use the default spinner
+        builder.setView(R.layout.loading_dialog) // Replace with your custom layout
+        builder.setCancelable(false) // Set to false if you don't want the user to cancel it by back button
+
+        progressDialog = builder.create()
+        progressDialog?.show()
+    }
+
+    private fun hideLoadingIndicator() {
+        progressDialog?.dismiss()
+    }
+
+
+
 }
+
+
