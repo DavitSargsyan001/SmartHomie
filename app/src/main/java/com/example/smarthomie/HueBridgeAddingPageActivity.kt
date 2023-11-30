@@ -164,7 +164,13 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         val builder = AlertDialog.Builder(this)
         // Use a custom layout with a progress bar, or use the default spinner
         builder.setView(R.layout.loading_dialog) // Replace with your custom layout
-        builder.setCancelable(false) // Set to false if you don't want the user to cancel it by back button
+        builder.setCancelable(true) // Set to false if you don't want the user to cancel it by back button
+
+        builder.setNegativeButton("Cancel") { dialog, which ->
+            stopDiscovery()
+            dialog.dismiss()
+            Toast.makeText(this, "Discovery canceled", Toast.LENGTH_SHORT).show()
+        }
 
         progressDialog = builder.create()
         progressDialog?.show()
