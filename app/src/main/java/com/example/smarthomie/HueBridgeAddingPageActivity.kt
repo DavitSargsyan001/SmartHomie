@@ -16,6 +16,8 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class HueBridgeAddingPageActivity : AppCompatActivity(){
     private lateinit var nsdManager: NsdManager
@@ -72,12 +74,14 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
     }
 
     private fun stopDiscovery() {
-        if (isDiscoveryRunning) {
+        if (isDiscoveryRunning && ::nsdManager.isInitialized) {
             nsdManager.stopServiceDiscovery(discoveryListener)
             isDiscoveryRunning = false
             //Dismiss loading dialog
             hideLoadingIndicator()
         }
+
+        progressDialog?.dismiss()
     }
 
     private  val discoveryListener = object : NsdManager.DiscoveryListener {
@@ -120,6 +124,15 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             // In case service is lost
             Log.d("mDNS", "On service Lost")
 
+        }
+
+         fun onServiceResolved(serviceInfo: NsdServiceInfo?) {
+            Log.d("mDNS", "Resolve Succeeded. $serviceInfo")
+            if(serviceInfo != null) {
+                val hostAddress = serviceInfo.host.hostAddress
+                Log.d("mDNS", "Hue Bridge IP Address: $hostAddress")
+                saveBridgeDetailsToDatabase(hostAddress)
+            }
         }
     }
 
@@ -180,6 +193,30 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         progressDialog?.dismiss()
     }
 
+    private fun saveBridgeDetailsToDatabase(ipAddress: String) {
+        // Logic to save the IP address and any other details to your database
+        // For example, if using Firebase Firestore:
+        /*
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        userId?.let {
+            val db = FirebaseFirestore.getInstance()
+            val bridgeDetails = hashMapOf("ipAddress" to ipAddress)
+            db.collection("users").document(it).update("hueBridge", bridgeDetails)
+                .addOnSuccessListener { Log.d("Database", "Hue Bridge details saved successfully") }
+                .addOnFailureListener { e -> Log.w("Database", "Error saving Hue Bridge details", e) }
+        }
+        */
+        /*
+        * How to add the bridge to database correctly
+        * 1. Get the bridge IP but don't store the IP in the database or maybe we could store it but not depend on it?
+        * 2. Set the device Type to Hue bridge
+        * 3. Set the Name property to Hue bridge
+        * 4. Set status to appropriate status such as Connected
+        * 5. set the ownerUserID to whatever the current user's ID is
+        * 6. Add the Document ID generated for the device to User's list of Devices
+        * */
+        Toast.makeText(this, "Saving bridge details to the database", Toast.LENGTH_SHORT).show()
+    }
 
 
 }
