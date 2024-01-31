@@ -25,8 +25,8 @@
 
     <ImageView
         android:id="@+id/imageView7"
-        android:layout_width="411dp"
-        android:layout_height="61dp"
+        android:layout_width="433dp"
+        android:layout_height="73dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +38,7 @@
 
     <ImageView
         android:id="@+id/imageView6"
-        android:layout_width="411dp"
+        android:layout_width="443dp"
         android:layout_height="61dp"
         android:layout_marginTop="670dp"
         android:scaleType="centerCrop"
