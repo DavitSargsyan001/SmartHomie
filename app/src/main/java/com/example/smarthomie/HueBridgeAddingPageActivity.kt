@@ -16,6 +16,7 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import okhttp3.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -24,6 +25,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
     private val serviceTypeHue = "_hue._tcp."
     private var isDiscoveryRunning = false
     private var progressDialog: AlertDialog? = null
+    private var hostIP: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -132,6 +134,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
                 val hostAddress = serviceInfo.host.hostAddress
                 Log.d("mDNS", "Hue Bridge IP Address: $hostAddress")
                 saveBridgeDetailsToDatabase(hostAddress)
+                hostIP = hostAddress
             }
         }
     }
@@ -143,7 +146,16 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             .setMessage("A Hue Bridge has been found. Add it to your smart home setup?")
             .setPositiveButton("Add") { dialog, which ->
                 // Handling hue bridge adding
-                addUserBridgeToSetup()
+                AlertDialog.Builder(this)
+                    .setTitle("Instructions")
+                    .setMessage("Press the circular button on the Hue Bridge and wait couple of minutes to obtain necessary information")
+                    .setPositiveButton("I Pressed the button"){ dialog, which ->
+                        sendPostMessageToHueAPI()
+                        addUserBridgeToSetup()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+
             }
             .setNegativeButton("Cancel", null)
             .show()
@@ -216,6 +228,11 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         * 6. Add the Document ID generated for the device to User's list of Devices
         * */
         Toast.makeText(this, "Saving bridge details to the database", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun sendPostMessageToHueAPI(){
+        val url = "http://$hostIP/api"
+
     }
 
 
