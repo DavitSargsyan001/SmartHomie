@@ -111,38 +111,43 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         override fun onServiceFound(service: NsdServiceInfo?) {
             Log.d("mDNS", "Service found")
             if (service?.serviceType == serviceTypeHue) {
-                Log.d("mDNS", "Inside If statement of service found")
-                runOnUiThread {
-                    //Hue bridge found
-                    showAddBridgeDialog()
-                    stopDiscovery()
-                }
+                Log.d("mDNS", "Attempting to resolve Hue Bridge service")
+                nsdManager.resolveService(service, object : NsdManager.DiscoveryListener {
+                    override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
+                        Log.e("mDNS" , "Resolve failed: Error code:$errorCode")
+                    }
+
+                    override fun onServiceResolved(serviceInfo: NsdServiceInfo?) {
+                        Log.d("mDNS", "Service resolved: $serviceInfo")
+                        //Lines below will be executed once service is resolved
+                        serviceInfo?.let {
+                            val hostAddress = it.host.hostAddress
+                            Log.d("mDNS", "Hue Bridge IP Address: $hostAddress")
+                            runOnUiThread{
+                                showAddBridgeDialog(hostAddress)
+                            }
+                        }
+                    }
+                })
             }
         }
 
         override fun onServiceLost(service: NsdServiceInfo?) {
             // In case service is lost
             Log.d("mDNS", "On service Lost")
-
         }
 
-         fun onServiceResolved(serviceInfo: NsdServiceInfo?) {
-            Log.d("mDNS", "Resolve Succeeded. $serviceInfo")
-            if(serviceInfo != null) {
-                val hostAddress = serviceInfo.host.hostAddress
-                Log.d("mDNS", "Hue Bridge IP Address: $hostAddress")
-                saveBridgeDetailsToDatabase(hostAddress)
-            }
-        }
     }
 
-    private fun showAddBridgeDialog() {
+    private fun showAddBridgeDialog(hostAddress: String) {
         Log.d("mDNS", "Inside show add bridge dialog")
         AlertDialog.Builder(this)
             .setTitle("Hue Bridge Found")
             .setMessage("A Hue Bridge has been found. Add it to your smart home setup?")
             .setPositiveButton("Add") { dialog, which ->
                 // Handling hue bridge adding
+
+                saveBridgeDetailsToDatabase(hostAddress)
                 addUserBridgeToSetup()
             }
             .setNegativeButton("Cancel", null)
