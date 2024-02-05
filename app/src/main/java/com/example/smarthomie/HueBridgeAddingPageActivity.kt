@@ -19,6 +19,20 @@ import androidx.appcompat.app.AlertDialog
 import okhttp3.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import org.json.JSONObject
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Callback
+import okhttp3.Call
+import okhttp3.Response
+import org.json.JSONArray
+import org.json.JSONException
+import java.io.IOException
+
+
+
 
 class HueBridgeAddingPageActivity : AppCompatActivity(){
     private lateinit var nsdManager: NsdManager
@@ -140,18 +154,37 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
     }
 
     private fun showAddBridgeDialog() {
-        Log.d("mDNS", "Inside show add bridge dialog")
         AlertDialog.Builder(this)
             .setTitle("Hue Bridge Found")
             .setMessage("A Hue Bridge has been found. Add it to your smart home setup?")
             .setPositiveButton("Add") { dialog, which ->
-                // Handling hue bridge adding
                 AlertDialog.Builder(this)
                     .setTitle("Instructions")
-                    .setMessage("Press the circular button on the Hue Bridge and wait couple of minutes to obtain necessary information")
-                    .setPositiveButton("I Pressed the button"){ dialog, which ->
-                        sendPostMessageToHueAPI()
-                        addUserBridgeToSetup()
+                    .setMessage("Press the circular button on the Hue Bridge and wait a couple of minutes to obtain necessary information")
+                    .setPositiveButton("I Pressed the button") { dialog, which ->
+                        // Here you pass the callback implementation to handle the response
+                        sendPostMessageToHueAPI(object : HueBridgeCallback {
+                            override fun onSuccess(username: String) {
+                                runOnUiThread {
+                                    Toast.makeText(applicationContext, "Bridge added successfully.", Toast.LENGTH_LONG).show()
+                                    addUserBridgeToSetup()
+                                    // Here you can also save the username or proceed with the next steps
+                                }
+                            }
+
+                            override fun onFailure(error: String) {
+                                runOnUiThread {
+                                    AlertDialog.Builder(this@HueBridgeAddingPageActivity)
+                                        .setTitle("Error")
+                                        .setMessage("Failed to add the Hue Bridge: $error. Would you like to retry?")
+                                        .setPositiveButton("Retry") { dialog, which ->
+                                            showAddBridgeDialog() // Retry by showing the dialog again
+                                        }
+                                        .setNegativeButton("Cancel", null)
+                                        .show()
+                                }
+                            }
+                        })
                     }
                     .setNegativeButton("Cancel", null)
                     .show()
@@ -160,6 +193,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             .setNegativeButton("Cancel", null)
             .show()
     }
+
 
     override  fun onPause() {
         Log.d("mDNS", "At on Pause start")
@@ -230,10 +264,62 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         Toast.makeText(this, "Saving bridge details to the database", Toast.LENGTH_SHORT).show()
     }
 
-    private fun sendPostMessageToHueAPI(){
+    fun sendPostMessageToHueAPI(callback: HueBridgeCallback) {
         val url = "http://$hostIP/api"
+        val jsonBody = JSONObject().apply {
+            put("devicetype", "com.example.smarthomie#app")
+        }
 
+        val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        OkHttpClient().newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // Handle failure, e.g., log the error or show an error message to the user
+                // Remember to perform any UI updates on the main thread
+                callback.onFailure(e.message ?: "Network error")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use { res ->
+                    val responseBody = res.body?.string()
+                    if (responseBody != null) {
+                        try {
+                            val jsonArray = JSONArray(responseBody)
+                            if (jsonArray.length() > 0) {
+                                val responseObject = jsonArray.getJSONObject(0)
+                                if (responseObject.has("success")) {
+                                    val successObject = responseObject.getJSONObject("success")
+                                    val username = successObject.getString("username")
+                                    callback.onSuccess(username)
+                                    // Use the username for future requests
+                                    // Here, you might want to update the UI or store the username,
+                                    // remember to do so on the UI thread if affecting the UI
+                                } else if (responseObject.has("error")) {
+                                    val errorObject = responseObject.getJSONObject("error")
+                                    val errorDescription = errorObject.getString("description")
+                                    callback.onFailure(errorDescription)
+                                    // Handle the error, inform the user
+                                    // Remember to update the UI on the main thread if necessary
+                                }
+                            }
+                        } catch (e: JSONException) {
+                            // Handle JSON parsing error
+                        }
+                    }
+                }
+            }
+        })
     }
+
+    interface HueBridgeCallback {
+        fun onSuccess(username: String)
+        fun onFailure(error: String)
+    }
+
 
 
 }
