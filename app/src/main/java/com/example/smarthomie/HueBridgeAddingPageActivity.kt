@@ -240,28 +240,20 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
     }
 
     private fun saveBridgeDetailsToDatabase(ipAddress: String) {
-        // Logic to save the IP address and any other details to your database
-        // For example, if using Firebase Firestore:
-        /*
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        userId?.let {
-            val db = FirebaseFirestore.getInstance()
-            val bridgeDetails = hashMapOf("ipAddress" to ipAddress)
-            db.collection("users").document(it).update("hueBridge", bridgeDetails)
-                .addOnSuccessListener { Log.d("Database", "Hue Bridge details saved successfully") }
-                .addOnFailureListener { e -> Log.w("Database", "Error saving Hue Bridge details", e) }
-        }
-        */
-        /*
-        * How to add the bridge to database correctly
-        * 1. Get the bridge IP but don't store the IP in the database or maybe we could store it but not depend on it?
-        * 2. Set the device Type to Hue bridge
-        * 3. Set the Name property to Hue bridge
-        * 4. Set status to appropriate status such as Connected
-        * 5. set the ownerUserID to whatever the current user's ID is
-        * 6. Add the Document ID generated for the device to User's list of Devices
-        * */
         Toast.makeText(this, "Saving bridge details to the database", Toast.LENGTH_SHORT).show()
+        val db = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val bridgeIp = hostIP ?: return
+
+        val bridgeDetails = hashMapOf(
+            "IP" to bridgeIp,
+            "Name: " to "HueBridge",
+            "Status: " to "Initializing",
+            "Type: " to "HueBridge",
+            "hueBridgeUsername: " to "",
+            "ownerUserID" to userId
+        )
+
     }
 
     fun sendPostMessageToHueAPI(callback: HueBridgeCallback) {
