@@ -147,7 +147,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             if(serviceInfo != null) {
                 val hostAddress = serviceInfo.host.hostAddress
                 Log.d("mDNS", "Hue Bridge IP Address: $hostAddress")
-                saveBridgeDetailsToDatabase(hostAddress)
+
                 hostIP = hostAddress
             }
         }
@@ -167,7 +167,8 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
                             override fun onSuccess(username: String) {
                                 runOnUiThread {
                                     Toast.makeText(applicationContext, "Bridge added successfully.", Toast.LENGTH_LONG).show()
-                                    addUserBridgeToSetup()
+                                    saveBridgeDetailsToDatabase(username)
+                                    //addUserBridgeToSetup()
                                     // Here you can also save the username or proceed with the next steps
                                 }
                             }
@@ -239,7 +240,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         progressDialog?.dismiss()
     }
 
-    private fun saveBridgeDetailsToDatabase(ipAddress: String) {
+    private fun saveBridgeDetailsToDatabase(hueUserName: String) {
         Toast.makeText(this, "Saving bridge details to the database", Toast.LENGTH_SHORT).show()
         val db = FirebaseFirestore.getInstance()
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -250,9 +251,17 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             "Name: " to "HueBridge",
             "Status: " to "Initializing",
             "Type: " to "HueBridge",
-            "hueBridgeUsername: " to "",
+            "hueBridgeUsername: " to hueUserName,
             "ownerUserID" to userId
         )
+
+        db.collection("Devices").add(bridgeDetails)
+            .addOnSuccessListener { documentReference ->
+                Log.d("Firestore", "Device added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Log.w("Firestore", "Error adding device", e)
+            }
 
     }
 
