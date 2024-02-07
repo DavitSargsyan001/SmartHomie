@@ -258,6 +258,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         db.collection("Devices").add(bridgeDetails)
             .addOnSuccessListener { documentReference ->
                 Log.d("Firestore", "Device added with ID: ${documentReference.id}")
+
             }
             .addOnFailureListener { e ->
                 Log.w("Firestore", "Error adding device", e)
