@@ -16,22 +16,23 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
-import okhttp3.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import org.json.JSONObject
+import okhttp3.OkHttpClient
+import okhttp3.*
+import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Callback
 import okhttp3.Call
 import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONException
 import java.io.IOException
-
-
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 
 class HueBridgeAddingPageActivity : AppCompatActivity(){
@@ -40,7 +41,6 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
     private var isDiscoveryRunning = false
     private var progressDialog: AlertDialog? = null
     private var hostIP: String? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -167,9 +167,8 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
                             override fun onSuccess(username: String) {
                                 runOnUiThread {
                                     Toast.makeText(applicationContext, "Bridge added successfully.", Toast.LENGTH_LONG).show()
-                                    saveBridgeDetailsToDatabase(username)
-                                    //addUserBridgeToSetup()
-                                    // Here you can also save the username or proceed with the next steps
+                                    saveBridgeDetailsToFirestore(username)
+
                                 }
                             }
 
@@ -240,7 +239,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         progressDialog?.dismiss()
     }
 
-    private fun saveBridgeDetailsToDatabase(hueUserName: String) {
+    private fun saveBridgeDetailsToFirestore(hueUserName: String) {
         Toast.makeText(this, "Saving bridge details to the database", Toast.LENGTH_SHORT).show()
         val db = FirebaseFirestore.getInstance()
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -258,11 +257,17 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         db.collection("Devices").add(bridgeDetails)
             .addOnSuccessListener { documentReference ->
                 Log.d("Firestore", "Device added with ID: ${documentReference.id}")
+                Toast.makeText(this, "Device added to the database", Toast.LENGTH_SHORT).show()
 
+                val deviceId = documentReference.id // Firestore document ID as Device ID
+                SaveBridgeDetailsToLocalDatabase(deviceId, bridgeIp, hueUserName, userId)
             }
             .addOnFailureListener { e ->
                 Log.w("Firestore", "Error adding device", e)
+                Toast.makeText(this, "Device not added to the database due to errors!", Toast.LENGTH_SHORT).show()
             }
+
+
 
     }
 
@@ -321,6 +326,24 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         fun onSuccess(username: String)
         fun onFailure(error: String)
     }
+
+    fun SaveBridgeDetailsToLocalDatabase(deviceID: String, bridgeIP: String, HueBridgeUsername: String, OwnerUserID: String){
+        val deviceDetails = DeviceDetails(
+            deviceId = deviceID, // Generate or obtain a unique ID
+            name = "Hue Bridge", // Example name
+            status = "Connected",
+            ip = bridgeIP,
+            hueBridgeUsername = HueBridgeUsername,// The username obtained from Hue API
+            ownerUserID = OwnerUserID
+        )
+
+        lifecycleScope.launch {
+            val db = DatabaseBuilder.getInstance(applicationContext)
+            db.deviceDetailsDao().insert(deviceDetails)
+        }
+    }
+
+
 
 
 
