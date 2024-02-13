@@ -7,7 +7,13 @@ class DeviceAdapter(private val devices: List<DeviceDetails>) : RecyclerView.Ada
             itemView.deviceName.text = device.name
             itemView.deviceStatus.text = device.status
             // Set the device icon based on the device type or status
-            itemView.deviceIcon.setImageResource(R.drawable.ic_device) // Adjust as needed
+            val iconRes = when (device.type) {
+                "HueBridge" -> R.drawable.ic_hue_bridge
+                "Thermostat" -> R.drawable.ic_thermostat
+                // Add more cases as needed
+                else -> R.drawable.ic_generic_device // A generic icon for unknown types
+            }
+            itemView.deviceIcon.setImageResource(iconRes)
         }
     }
 

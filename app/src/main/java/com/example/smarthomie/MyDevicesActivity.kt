@@ -1,5 +1,12 @@
 package com.example.smarthomie
 
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
+
 class MyDevicesActivity : AppCompatActivity() {
 
     private lateinit var deviceAdapter: DeviceAdapter
@@ -7,7 +14,7 @@ class MyDevicesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_my_devices)
+        setContentView(R.layout.my_devices)
 
         devicesRecyclerView = findViewById(R.id.devicesRecyclerView)
         devicesRecyclerView.layoutManager = LinearLayoutManager(this)
