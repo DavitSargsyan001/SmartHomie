@@ -1,32 +1,41 @@
 package com.example.smarthomie
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
+import com.example.smarthomie.databinding.MyDevicesBinding
+import com.example.smarthomie.DeviceViewModel
 
 class MyDevicesActivity : AppCompatActivity() {
-
-    private lateinit var deviceAdapter: DeviceAdapter
-    private lateinit var devicesRecyclerView: RecyclerView
+    private lateinit var binding: MyDevicesBinding
+    private val viewModel: DeviceViewModel by viewModels {
+        //DeviceViewModel(DatabaseBuilder.getInstance(application).deviceDetailsDao())
+        val deviceDao = DatabaseBuilder.getInstance(application).deviceDetailsDao()
+        DeviceViewModelFactory(deviceDao)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.my_devices)
+        binding = MyDevicesBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        devicesRecyclerView = findViewById(R.id.devicesRecyclerView)
-        devicesRecyclerView.layoutManager = LinearLayoutManager(this)
-        fetchDevicesAndDisplay()
+        setupRecyclerView()
+        observeDevices()
     }
 
-    private fun fetchDevicesAndDisplay() {
-        lifecycleScope.launch {
-            val db = DatabaseBuilder.getInstance(applicationContext)
-            val devices = db.deviceDetailsDao().getAllDevices() // Ensure this method exists in your DAO
-            deviceAdapter = DeviceAdapter(devices)
-            devicesRecyclerView.adapter = deviceAdapter
-        }
+    private fun setupRecyclerView() {
+        val adapter = DeviceAdapter()
+        binding.devicesRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.devicesRecyclerView.adapter = adapter
+    }
+
+    private fun observeDevices() {
+        viewModel.devices.observe(this, { devices ->
+            (binding.devicesRecyclerView.adapter as DeviceAdapter).submitList(devices)
+        })
     }
 }

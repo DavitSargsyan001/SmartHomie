@@ -18,7 +18,7 @@ object DatabaseBuilder {
         if (INSTANCE == null) {
             synchronized(AppDatabase::class) {
                 INSTANCE = Room.databaseBuilder(context.applicationContext,
-                    AppDatabase::class.java, "your_database_name.db")
+                    AppDatabase::class.java, "Devices.db")
                     .fallbackToDestructiveMigration() // Handle migrations
                     .build()
             }

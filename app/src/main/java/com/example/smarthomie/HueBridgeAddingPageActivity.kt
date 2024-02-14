@@ -331,6 +331,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         val deviceDetails = DeviceDetails(
             deviceId = deviceID, // Generate or obtain a unique ID
             name = "Hue Bridge", // Example name
+            type = "Hue Bridge",
             status = "Connected",
             ip = bridgeIP,
             hueBridgeUsername = HueBridgeUsername,// The username obtained from Hue API

@@ -1,30 +1,47 @@
 package com.example.smarthomie
 
-class DeviceAdapter(private val devices: List<DeviceDetails>) : RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.example.smarthomie.databinding.DeviceItemBinding
 
-    class DeviceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(device: DeviceDetails) {
-            itemView.deviceName.text = device.name
-            itemView.deviceStatus.text = device.status
-            // Set the device icon based on the device type or status
-            val iconRes = when (device.type) {
-                "HueBridge" -> R.drawable.ic_hue_bridge
-                "Thermostat" -> R.drawable.ic_thermostat
-                // Add more cases as needed
-                else -> R.drawable.ic_generic_device // A generic icon for unknown types
-            }
-            itemView.deviceIcon.setImageResource(iconRes)
-        }
+class DeviceAdapter(private var devices: List<DeviceDetails> = listOf()) : RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
+
+    fun submitList(newDevices: List<DeviceDetails>){
+        devices = newDevices
+        notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.device_item, parent, false)
-        return DeviceViewHolder(view)
+class DeviceViewHolder(val binding: DeviceItemBinding) : RecyclerView.ViewHolder(binding.root){
+    fun bind(device: DeviceDetails) {
+        binding.deviceName.text = device.name
+        binding.deviceStatus.text = device.status
+
+
+        binding.deviceIcon.setImageResource(when (device.type){
+            "HueBridge" -> R.drawable.ic_hue_bridge
+            "Thermostat" -> R.drawable.ic_thermostat
+            "Lightbulb" -> R.drawable.ic_light_bulb
+            "Smartplug" -> R.drawable.ic_smart_plug
+            else-> R.drawable.ic_generic_device
+        })
+    }
+}
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder{
+        val binding = DeviceItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return DeviceViewHolder(binding);
     }
 
+    // Replaces the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: DeviceViewHolder, position: Int) {
         holder.bind(devices[position])
     }
 
-    override fun getItemCount(): Int = devices.size
+    // Return the size of your dataset (invoked by the layout manager)
+    override fun getItemCount() = devices.size
+
 }

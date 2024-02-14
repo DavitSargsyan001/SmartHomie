@@ -1,5 +1,6 @@
 package com.example.smarthomie
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -9,15 +10,17 @@ import androidx.room.Query
 interface DeviceDetailsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(deviceDetails: DeviceDetails)
+     fun insert(deviceDetails: DeviceDetails)
 
     @Query("SELECT * FROM DeviceDetails WHERE deviceId = :deviceId")
-    suspend fun getDeviceById(deviceId: String): DeviceDetails?
+     fun getDeviceById(deviceId: String): DeviceDetails?
 
     @Query("SELECT * FROM DeviceDetails")
-    suspend fun getAllDevices(): List<DeviceDetails>
+     fun getAllDevices(): LiveData<List<DeviceDetails>>
 
     @Query("SELECT * FROM DeviceDetails WHERE ownerUserID = :userId")
-    suspend fun getDevicesForUser(userId: String): List<DeviceDetails>
+     fun getDevicesForUser(userId: String): List<DeviceDetails>
+
+
 
 }

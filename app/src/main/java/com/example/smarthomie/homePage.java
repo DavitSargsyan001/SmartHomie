@@ -37,7 +37,7 @@ public class homePage extends AppCompatActivity implements View.OnClickListener 
         }
 
         if (id == R.id.button5) {
-            startActivity(new Intent(homePage.this, MyDevices.class));
+            startActivity(new Intent(homePage.this, MyDevicesActivity.class));
         }
     }
 }

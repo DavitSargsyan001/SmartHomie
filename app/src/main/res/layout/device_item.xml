@@ -6,14 +6,14 @@ android:layout_width="match_parent"
 android:layout_height="wrap_content"
 android:padding="16dp">
 
-<ImageView
-    android:id="@+id/deviceIcon"
-    android:layout_width="40dp"
-    android:layout_height="40dp"
-    android:src="@drawable/ic_device" // Use your own icon here
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent" />
+    <ImageView
+        android:id="@+id/deviceIcon"
+        android:layout_width="42dp"
+        android:layout_height="46dp"
+        android:src="@drawable/ic_hue_bridge"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 <TextView
     android:id="@+id/deviceName"
