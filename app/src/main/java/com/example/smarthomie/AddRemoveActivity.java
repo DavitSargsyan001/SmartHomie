@@ -1,7 +1,5 @@
 package com.example.smarthomie;
 
-
-
 import static com.google.android.material.internal.ContextUtils.getActivity;
 
 import android.app.Dialog;
@@ -35,7 +33,7 @@ public class AddRemoveActivity extends AppCompatActivity{
 
         ImageButton btn = (ImageButton)findViewById(R.id.ibHome2);
         Button addButton = (Button)findViewById(R.id.addbutton);
-        String[] listItems = getResources().getStringArray(R.array.Device_List);
+        //String[] listItems = getResources().getStringArray(R.array.Device_List);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,15 +45,27 @@ public class AddRemoveActivity extends AppCompatActivity{
     addButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.d("AddDevice", "Add button clicked"); // Log at the beginning of the onClick
-
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            Log.d("AddDevice", "Firestore db Initialized?"); // Log at the beginning of the onClick
             db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
                if(task.isSuccessful() && task.getResult() != null){
-                   Log.d("AddDevice", "Task was sucesfull?"); // Log at the beginning of the onClick
                    DocumentSnapshot document = task.getResult();
-                   List<String> deviceIDs = (List<String>) document.get("listOfDevices");
+
+                   Object listOfDevicesObject = document.get("listOfDevices");
+                   List<String> deviceIDs = new ArrayList<>();
+
+                   if (listOfDevicesObject instanceof  List<?>) {
+                       List<?> listOfDevicesRaw = (List<?>) listOfDevicesObject;
+
+                       if (!listOfDevicesRaw.isEmpty() && listOfDevicesRaw.get(0) instanceof String) {
+                           @SuppressWarnings("unchecked") // We have checked that the elements are strings
+                           List<String> listOfDevices = (List<String>) listOfDevicesRaw;
+                           deviceIDs = listOfDevices;
+                       }
+                   } else {
+                       // The field is not a list or does not exist; handle this case if needed
+                       Log.d("Add device", "listOfDevices does not exist for this user");
+
+                   }
 
                    if(deviceIDs == null || deviceIDs.isEmpty())
                    {
@@ -65,7 +75,7 @@ public class AddRemoveActivity extends AppCompatActivity{
                        dialog.show();
                    }
                    else if(deviceIDs != null ) {
-                       Log.d("AddDevice", "No Device IDs found, prompt user to add HUE bridge"); // Log at the beginning of the onClick
+                       Log.d("AddDevice", "User has some device IDs"); // Log at the beginning of the onClick
                        for (String deviceID : deviceIDs) {
                            Log.d("AddDevice", "Processing device ID: " + deviceID);
                            db.collection("Devices").document(deviceID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -76,11 +86,9 @@ public class AddRemoveActivity extends AppCompatActivity{
                                        String deviceType = deviceDocument.getString("type");
                                        if ("HUE_BRIDGE".equals(deviceType)) {
                                            Log.d("AddDevice", "HUE bridge already exists in user's account"); // Log at the beginning of the onClick
-                                           //This device is a hue bridge. go to adding devices
-                                           //AlertDialog dialog = createDialog();
+                                           startActivity(new Intent(AddRemoveActivity.this, DeviceAddingActivity.class));
                                        } else {
                                            Log.d("AddDevice", "User does not have Hue bridge and we will force him to add it"); // Log at the beginning of the onClick
-                                           //Force user to add Hue bridge to the App
                                            AlertDialog dialog = createDialog();
                                            dialog.show();
                                        }

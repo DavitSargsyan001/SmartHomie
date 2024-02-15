@@ -37,12 +37,13 @@
         </activity>
 
         <activity android:name=".LoginActivity"></activity>
-        <activity android:name=".MyDevices"></activity>
+        <activity android:name=".MyDevicesActivity"></activity>
         <activity android:name=".homePage"></activity>
         <activity android:name=".Scenarios"></activity>
         <activity android:name=".AddRemoveActivity"></activity>
         <activity android:name=".HueBridgeAddingPageActivity"></activity>
         <activity android:name=".PhilipsHueController"></activity>
+        <activity android:name=".DeviceAddingActivity"></activity>
 
     </application>
 

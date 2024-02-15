@@ -32,6 +32,8 @@ import org.json.JSONArray
 import org.json.JSONException
 import java.io.IOException
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.firestore.FieldValue
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -127,12 +129,24 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         override fun onServiceFound(service: NsdServiceInfo?) {
             Log.d("mDNS", "Service found")
             if (service?.serviceType == serviceTypeHue) {
-                Log.d("mDNS", "Inside If statement of service found")
-                runOnUiThread {
-                    //Hue bridge found
-                    showAddBridgeDialog()
-                    stopDiscovery()
-                }
+                Log.d("mDNS", "Hue service found: Initiating resolution")
+
+                nsdManager.resolveService(service, object : NsdManager.ResolveListener {
+                    override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
+                        Log.e("NSD", "Resolve failed: $errorCode")
+                    }
+
+                    override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                        Log.d("NSD", "Service resolved: IP - ${serviceInfo.host.hostAddress}")
+                        runOnUiThread {
+                            //Hue bridge found and resolved
+                            val bridgeIPaddress = serviceInfo.host.hostAddress
+                            hostIP = bridgeIPaddress
+                            showAddBridgeDialog(bridgeIPaddress)
+                            stopDiscovery()
+                        }
+                    }
+                })
             }
         }
 
@@ -153,7 +167,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
         }
     }
 
-    private fun showAddBridgeDialog() {
+    private fun showAddBridgeDialog(bridgeIP: String) {
         AlertDialog.Builder(this)
             .setTitle("Hue Bridge Found")
             .setMessage("A Hue Bridge has been found. Add it to your smart home setup?")
@@ -178,7 +192,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
                                         .setTitle("Error")
                                         .setMessage("Failed to add the Hue Bridge: $error. Would you like to retry?")
                                         .setPositiveButton("Retry") { dialog, which ->
-                                            showAddBridgeDialog() // Retry by showing the dialog again
+                                            showAddBridgeDialog(bridgeIP) // Retry by showing the dialog again
                                         }
                                         .setNegativeButton("Cancel", null)
                                         .show()
@@ -251,7 +265,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             "Status: " to "Initializing",
             "Type: " to "HueBridge",
             "hueBridgeUsername: " to hueUserName,
-            "ownerUserID" to userId
+            "ownerUserID" to  userId
         )
 
         db.collection("Devices").add(bridgeDetails)
@@ -260,7 +274,10 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
                 Toast.makeText(this, "Device added to the database", Toast.LENGTH_SHORT).show()
 
                 val deviceId = documentReference.id // Firestore document ID as Device ID
+                saveDeviceIdOnUsersListOfDevices(deviceId, userId)
+                lifecycleScope.launch(Dispatchers.IO) {
                 SaveBridgeDetailsToLocalDatabase(deviceId, bridgeIp, hueUserName, userId)
+                }
             }
             .addOnFailureListener { e ->
                 Log.w("Firestore", "Error adding device", e)
@@ -271,8 +288,22 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
 
     }
 
+    private fun saveDeviceIdOnUsersListOfDevices(deviceId: String, userId: String){
+        val db = FirebaseFirestore.getInstance()
+        val userDocRef = db.collection("Users").document(userId)
+
+        userDocRef.update("listOfDevices", FieldValue.arrayUnion(deviceId))
+            .addOnSuccessListener {
+                Log.d("Firestore", "Device ID added to user's listOfDevices succesfully")
+            }
+            .addOnFailureListener {e->
+                Log.w("Firestore", "Error adding device ID to user's listOfDevices",e )
+            }
+    }
+
     fun sendPostMessageToHueAPI(callback: HueBridgeCallback) {
-        val url = "http://$hostIP/api"
+        Log.d("Bridge IP", "Device IP: ${hostIP}")
+        val url = "http://${hostIP}/api"
         val jsonBody = JSONObject().apply {
             put("devicetype", "com.example.smarthomie#app")
         }
