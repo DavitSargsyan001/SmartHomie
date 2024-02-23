@@ -22,6 +22,9 @@ public class homePage extends AppCompatActivity implements View.OnClickListener 
 
         Button myDevicesButton = (Button)findViewById(R.id.button5);
         myDevicesButton.setOnClickListener(this);
+
+        Button profileButton = (Button)findViewById(R.id.button4);
+        profileButton.setOnClickListener(this);
     }
 
     @Override
@@ -38,6 +41,10 @@ public class homePage extends AppCompatActivity implements View.OnClickListener 
 
         if (id == R.id.button5) {
             startActivity(new Intent(homePage.this, MyDevicesActivity.class));
+        }
+
+        if (id == R.id.button4) {
+            startActivity(new Intent(homePage.this, Profile.class));
         }
     }
 }

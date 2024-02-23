@@ -44,6 +44,7 @@
         <activity android:name=".HueBridgeAddingPageActivity"></activity>
         <activity android:name=".PhilipsHueController"></activity>
         <activity android:name=".DeviceAddingActivity"></activity>
+        <activity android:name=".Profile"></activity>
 
     </application>
 
