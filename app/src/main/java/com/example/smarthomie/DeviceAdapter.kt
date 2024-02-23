@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smarthomie.databinding.DeviceItemBinding
+import android.util.Log
 
 class DeviceAdapter(private var devices: List<DeviceDetails> = listOf()) : RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
 
@@ -19,13 +20,13 @@ class DeviceViewHolder(val binding: DeviceItemBinding) : RecyclerView.ViewHolder
     fun bind(device: DeviceDetails) {
         binding.deviceName.text = device.name
         binding.deviceStatus.text = device.status
-
-
+        Log.d("DeviceAdapter", "Device type is ${device.type}")
         binding.deviceIcon.setImageResource(when (device.type){
-            "HueBridge" -> R.drawable.ic_hue_bridge
+
+            "Hue Bridge" -> R.drawable.ic_hue_bridge
             "Thermostat" -> R.drawable.ic_thermostat
-            "Lightbulb" -> R.drawable.ic_light_bulb
-            "Smartplug" -> R.drawable.ic_smart_plug
+            "Light bulb" -> R.drawable.ic_light_bulb
+            "Smart plug" -> R.drawable.ic_smart_plug
             else-> R.drawable.ic_generic_device
         })
     }

@@ -3,6 +3,10 @@ package com.example.smarthomie
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+enum class DeviceType {
+    HUE_BRIDGE , THERMOSTAT, LIGHTBULB, SMART_PLUG
+}
+
 @Entity
 data class DeviceDetails(
     @PrimaryKey val deviceId: String, // Unique ID for the device

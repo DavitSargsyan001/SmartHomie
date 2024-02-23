@@ -31,8 +31,8 @@ public class AddRemoveActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_remove_device);
 
-        ImageButton btn = (ImageButton)findViewById(R.id.ibHome2);
-        Button addButton = (Button)findViewById(R.id.addbutton);
+        ImageButton btn = findViewById(R.id.ibHome2);
+        Button addButton = findViewById(R.id.addbutton);
         //String[] listItems = getResources().getStringArray(R.array.Device_List);
 
         btn.setOnClickListener(new View.OnClickListener() {

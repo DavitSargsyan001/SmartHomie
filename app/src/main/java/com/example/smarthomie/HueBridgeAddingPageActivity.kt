@@ -369,7 +369,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             ownerUserID = OwnerUserID
         )
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             val db = DatabaseBuilder.getInstance(applicationContext)
             db.deviceDetailsDao().insert(deviceDetails)
         }

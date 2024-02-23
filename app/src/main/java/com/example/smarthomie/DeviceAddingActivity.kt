@@ -61,6 +61,7 @@ class DeviceAddingActivity: AppCompatActivity() {
             } else {
                 // Proceed with handling device addition into, local and remote databases
                 // Also save it into My devices page
+
             }
         }
 

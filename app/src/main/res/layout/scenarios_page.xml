@@ -7,33 +7,38 @@
 
     <ImageView
         android:id="@+id/imageView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="-78dp"
+        android:layout_width="443dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="670dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/border" />
 
 
     <ImageView
         android:id="@+id/imageView10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-78dp"
+        android:layout_width="433dp"
+        android:layout_height="73dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/border" />
 
     <TextView
         android:id="@+id/tvScenario"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="8dp"
         android:gravity="center_vertical|center_horizontal"
         android:text="SCENARIO "
         android:textColor="@color/black"
@@ -41,78 +46,80 @@
         android:visibility="visible"
 
 
-        app:layout_constraintBottom_toTopOf="@+id/btnHomeScenario"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnHomeScenario"
-
-
-        android:layout_width="359dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginTop="120dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/roundedbutton"
         android:drawableEnd="@drawable/home"
-
         android:text="Home"
-        android:textAlignment="textStart"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         android:textSize="28sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView10" />
 
     <Button
         android:id="@+id/btnAwayScenario"
-        android:layout_width="359dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/roundedbutton"
         android:drawableRight="@drawable/exit"
         android:text="Away"
-        android:textAlignment="textStart"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         android:textSize="28sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnHomeScenario" />
 
     <Button
         android:id="@+id/btnSleepScenario"
-        android:layout_width="359dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/roundedbutton"
         android:drawableRight="@drawable/moon"
         android:text="Sleep"
-        android:textAlignment="textStart"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         android:textSize="28sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnAwayScenario" />
 
     <Button
         android:id="@+id/btnEcoScenario"
-        android:layout_width="359dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/roundedbutton"
         android:drawableRight="@drawable/_19_leaf_1"
         android:text="Eco "
-        android:textAlignment="textStart"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         android:textSize="28sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnSleepScenario" />
 
     <Button
         android:id="@+id/btnCustomScenario"
-        android:layout_width="359dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/roundedbutton"
         android:drawableRight="@drawable/add_custonm_"
         android:text="Add Custom"
-        android:textAlignment="textStart"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         android:textSize="28sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnEcoScenario" />
@@ -121,11 +128,11 @@
         android:id="@+id/ibHome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="20dp"
         app:layout_constraintBottom_toTopOf="@+id/tvScenario"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.721"
+        app:layout_constraintVertical_bias="0.32"
         app:srcCompat="@drawable/home_duotone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

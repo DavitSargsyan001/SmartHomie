@@ -19,8 +19,9 @@ interface DeviceDetailsDao {
      fun getAllDevices(): LiveData<List<DeviceDetails>>
 
     @Query("SELECT * FROM DeviceDetails WHERE ownerUserID = :userId")
-     fun getDevicesForUser(userId: String): List<DeviceDetails>
+     fun getDevicesForUser(userId: String): LiveData<List<DeviceDetails>>
 
-
+    @Query("DELETE FROM DeviceDetails WHERE deviceId = :deviceId")
+     fun deleteDevice(deviceId: String)
 
 }
