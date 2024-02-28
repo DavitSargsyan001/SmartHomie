@@ -17,6 +17,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.878" />
 
+
+
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="411dp"
@@ -57,11 +59,24 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="399dp"
-        android:layout_height="470dp"
+        android:layout_height="425dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="80dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/add_devices"
+        android:layout_width="249dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="536dp"
+        android:text="Add selected Devices"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

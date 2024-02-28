@@ -3,6 +3,7 @@ package com.example.smarthomie
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
@@ -21,9 +22,13 @@ class AddRemoveActivity : AppCompatActivity() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: throw IllegalStateException("User not logged in")
 
         AddButton.setOnClickListener {
-            checkForHueBridge(userId) {hasHueBridge ->
-                if (hasHueBridge) {
-                    val intent = Intent(this, DeviceDiscoveryActivity::class.java)
+            checkForHueBridge(userId) {hasHueBridge, ip, username ->
+                if (hasHueBridge) {// && ip != null && username != null) {
+
+                    val intent = Intent(this, DeviceDiscoveryActivity::class.java).apply {
+                        putExtra("IP_ADDRESS", ip)
+                        putExtra("USERNAME", username)
+                    }
                     startActivity(intent)
                 } else {
                     showAlertDialog()
@@ -41,24 +46,39 @@ class AddRemoveActivity : AppCompatActivity() {
 
     }
 
-    private fun checkForHueBridge(userId: String, callback: (Boolean) -> Unit) {
+    private fun checkForHueBridge(userId: String, callback: (Boolean, String?, String?) -> Unit) {
         val db = FirebaseFirestore.getInstance()
-        val devicesRef = db.collection("devices")
+        val devicesRef = db.collection("Devices")
+        Log.d("AddingPage", "This is the userID: $userId")
+
+        devicesRef.get().addOnSuccessListener { result ->
+            for (document in result) {
+                Log.d("AddRemoveActivity", "${document.id} => ${document.data}")
+            }
+        }
 
         devicesRef.whereEqualTo("ownerUserID", userId)
-            .whereEqualTo("type", "HueBridge")
+            .whereEqualTo("Type", "HueBridge")
             .get()
             .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val hasHueBridge = task.result != null && !task.result!!.isEmpty
-                    callback(hasHueBridge)
+                if (task.isSuccessful ) {//&& !task.result!!.isEmpty) {//
+                    // Assuming the first document is the desired one as per previous assumptions
+                    Log.d("AddRemoveActivity", "Documents found: ${task.result!!.size()}")
+                    val document = task.result!!.documents[0]
+                    val ip =
+                        document.getString("IP") // Replace "ip" with the actual field name for the IP address
+                    val username =
+                        document.getString("hueBridgeUsername") // Replace "username" with the actual field name for the Hue bridge username
+                    callback(true, ip, username)
                 } else {
-                    callback(false)
+                    // Handle the case where the Hue Bridge is not found or there is an error
+                    Log.d("AddRemoveActivity", "No documents found or query failed")
+                    callback(false, null, null)
                 }
             }
     }
 
-    private fun showAlertDialog() {
+     private fun showAlertDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("No Hue Bridge Found")
         builder.setMessage("You need to connect a Hue Bridge to continue. Would you like to add one now?")
@@ -71,4 +91,5 @@ class AddRemoveActivity : AppCompatActivity() {
         }
         builder.show()
     }
+
 }
