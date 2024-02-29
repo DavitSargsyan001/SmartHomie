@@ -3,9 +3,19 @@ package com.example.smarthomie
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 
 class DeviceDiscoveryActivity : AppCompatActivity() {
     // Need to discover devices on the network by using the Hue Bridge
@@ -22,7 +32,7 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.device_discovery_page)
-        val intent = Intent(this, AddRemoveActivity::class.java)
+        //val intent = Intent(this, AddRemoveActivity::class.java)
         val hueBridgeIp = intent.getStringExtra("IP_ADDRESS")
         val hueBridgeUsername = intent.getStringExtra("USERNAME")
         val SaveButton: Button = findViewById(R.id.add_devices)
@@ -41,6 +51,29 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
     }
 
     private fun DiscoverDevices(hueIP: String?, hueUsername: String?){
+        Log.d("DeviceDiscoveryActivity", "Got IP: $hueIP")
+        Log.d("DeviceDiscoveryActivity", "Got Username: $hueUsername")
         val url = "http://$hueIP/api/$hueUsername/lights"
+
+        val jsonBody = JSONObject().apply {
+            put("devicetype", "com.example.smarthomie#app")
+        }
+
+        val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        OkHttpClient().newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                //Failure
+                Log.d("DeviceDiscoveryActivity", "Failed to send request")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 }
