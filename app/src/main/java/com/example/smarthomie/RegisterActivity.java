@@ -11,6 +11,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -68,9 +76,19 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerNewUser(){
-        String email, password;
+        String email, password, recipient, sender, emailUsername, emailPassword;
         email = emailTV.getText().toString();
         password = passwordTV.getText().toString();
+        sender = "bob@gmail.com";
+        emailUsername = "aovsepyan929@gmail.com";
+        emailPassword = "wpjo xuyy xrhn lzha";
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "465");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.socketFactory.port", "465");
+        prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Please enter email...", Toast.LENGTH_LONG).show();
@@ -107,7 +125,34 @@ public class RegisterActivity extends AppCompatActivity {
                                    Log.w(TAG, "Error writing document", e);
                                }
                            });
-
+                   Session session = Session.getInstance(prop,
+                           new javax.mail.Authenticator() {
+                                protected PasswordAuthentication getPasswordAuthentication() {
+                                    return new PasswordAuthentication(emailUsername, emailPassword);
+                                }
+                           });
+                   Thread thread = new Thread(new Runnable() {
+                       @Override
+                       public void run() {
+                           try {
+                                String recipient = email;
+                                Message message = new MimeMessage(session);
+                                message.setFrom(new InternetAddress(sender));
+                                message.setRecipients(
+                                       Message.RecipientType.TO,
+                                       InternetAddress.parse(recipient)
+                               );
+                                   message.setSubject("Confirmation");
+                                   message.setText("Please confirm your account.");
+                                   Transport.send(message);
+                                   Log.d(TAG, "Success");
+                           }
+                           catch (Exception e) {
+                               e.printStackTrace();
+                           }
+                       }
+                   });
+                   thread.start();
                    Intent intent = new Intent(RegisterActivity.this, homePage.class);
                    startActivity(intent);
                }
