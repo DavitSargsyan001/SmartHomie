@@ -57,9 +57,11 @@
         android:id="@+id/notifications"
         android:layout_width="195dp"
         android:layout_height="31dp"
+        android:layout_marginEnd="108dp"
+        android:layout_marginBottom="329dp"
         android:text="Notifications"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="108dp"
-        tools:layout_editor_absoluteY="246dp" />
+        app:layout_constraintBottom_toTopOf="@+id/logout"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
