@@ -7,6 +7,8 @@ import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -14,10 +16,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import org.json.JSONArray
 import org.json.JSONObject
+import org.json.JSONException
 import java.io.IOException
 
 class DeviceDiscoveryActivity : AppCompatActivity() {
+    private lateinit var adapter: DeviceAdapter
     // Need to discover devices on the network by using the Hue Bridge
     // Get the IP of the Bridge for sending requests to the API (Got it from previous activity to not call firestore again)
     // Also need the hue username that we get in the Hue bridge discovery process (Again got it from previous activity)
@@ -38,6 +43,10 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
         val SaveButton: Button = findViewById(R.id.add_devices)
         val DiscoverDevicesButton: Button = findViewById(R.id.discover_button)
         val homeButton: ImageButton = findViewById(R.id.ibHome2)
+        adapter = DeviceAdapter()
+        val recyclerView: RecyclerView = findViewById(R.id.devicesRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
 
         homeButton.setOnClickListener {
             val intent = Intent(this, homePage::class.java)
@@ -55,14 +64,9 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
         Log.d("DeviceDiscoveryActivity", "Got Username: $hueUsername")
         val url = "http://$hueIP/api/$hueUsername/lights"
 
-        val jsonBody = JSONObject().apply {
-            put("devicetype", "com.example.smarthomie#app")
-        }
-
-        val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())
         val request = Request.Builder()
             .url(url)
-            .post(requestBody)
+            .get()
             .build()
 
         OkHttpClient().newCall(request).enqueue(object : Callback {
@@ -72,8 +76,30 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                TODO("Not yet implemented")
+                response.use { res -> // Ensure the response body is closed after its use
+                    val responseBody = res.body?.string()
+                    if (res.isSuccessful && responseBody != null) {
+                        try {
+                            val jsonObject = JSONObject(responseBody)
+                            jsonObject.keys().forEach { key ->
+                                val lightObject = jsonObject.getJSONObject(key)
+                                val state = lightObject.getJSONObject("state")
+                                val isOn = state.getBoolean("on")
+                                val name = lightObject.getString("name")
+
+                                Log.d("DeviceDiscoveryActivity", "Device ID: $key, Name: $name, Is On: $isOn")
+                            }
+                        } catch (e: JSONException) {
+                            Log.e("DeviceDiscoveryActivity", "Could not parse JSON", e)
+                        }
+                    } else {
+                        Log.e("DeviceDiscoveryActivity", "Response not successful")
+                    }
+                }
             }
         })
     }
+
+
+
 }

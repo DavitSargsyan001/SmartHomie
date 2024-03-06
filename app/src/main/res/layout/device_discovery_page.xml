@@ -58,6 +58,7 @@
         app:srcCompat="@drawable/home_duotone" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/devicesRecyclerView"
         android:layout_width="399dp"
         android:layout_height="425dp"
         android:layout_marginStart="4dp"

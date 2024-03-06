@@ -40,7 +40,13 @@ class MyDevicesActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        val adapter = DeviceAdapter()
+        val adapter = DeviceAdapter(userDevices) { device ->
+            val intent = Intent(this, DeviceControlActivity::class.java).apply {
+                startActivity(intent)
+            }
+
+
+        }
         binding.devicesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.devicesRecyclerView.adapter = adapter
     }

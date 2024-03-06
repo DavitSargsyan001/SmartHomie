@@ -29,6 +29,11 @@ class DeviceViewHolder(val binding: DeviceItemBinding) : RecyclerView.ViewHolder
             "Smart plug" -> R.drawable.ic_smart_plug
             else-> R.drawable.ic_generic_device
         })
+        /*
+        itemView.setOnClickListener {
+            onClick(device)
+        }
+         */
     }
 }
 
