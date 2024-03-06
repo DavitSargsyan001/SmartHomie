@@ -81,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
         password = passwordTV.getText().toString();
         sender = "bob@gmail.com";
         emailUsername = "aovsepyan929@gmail.com";
-        emailPassword = "wpjo xuyy xrhn lzha";
+        emailPassword = "pehkgqalvxpavwoo";
 
         Properties prop = new Properties();
         prop.put("mail.smtp.host", "smtp.gmail.com");
@@ -143,7 +143,7 @@ public class RegisterActivity extends AppCompatActivity {
                                        InternetAddress.parse(recipient)
                                );
                                    message.setSubject("Confirmation");
-                                   message.setText("Please confirm your account.");
+                                   message.setText("Please confirm.");
                                    Transport.send(message);
                                    Log.d(TAG, "Success");
                            }
