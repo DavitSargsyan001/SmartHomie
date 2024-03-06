@@ -35,27 +35,20 @@ class MyDevicesActivity : AppCompatActivity() {
         startActivity(intent)
         }
 
-        //setupRecyclerView()
-        //observeDevices()
+        setupRecyclerView()
+        observeDevices()
     }
-    /*
+
     private fun setupRecyclerView() {
-        val adapter = DeviceAdapter(userDevices) { device ->
-            val intent = Intent(this, DeviceControlActivity::class.java).apply {
-                startActivity(intent)
-            }
-
-
-        }
+        val adapter = DeviceAdapter()
         binding.devicesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.devicesRecyclerView.adapter = adapter
     }
-
-     */
 
     private fun observeDevices() {
         viewModel.devices.observe(this, { devices ->
             (binding.devicesRecyclerView.adapter as DeviceAdapter).submitList(devices)
         })
     }
+
 }
