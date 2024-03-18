@@ -6,9 +6,13 @@ import android.os.PersistableBundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -38,12 +42,26 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.device_discovery_page)
         //val intent = Intent(this, AddRemoveActivity::class.java)
+        val db = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        var devices = listOf<DeviceDetails>()
         val hueBridgeIp = intent.getStringExtra("IP_ADDRESS")
         val hueBridgeUsername = intent.getStringExtra("USERNAME")
-        val SaveButton: Button = findViewById(R.id.add_devices)
+        val saveButton: Button = findViewById(R.id.add_devices)
         val DiscoverDevicesButton: Button = findViewById(R.id.discover_button)
         val homeButton: ImageButton = findViewById(R.id.ibHome2)
-        adapter = DeviceAdapter()
+        adapter = DeviceAdapter(devices) {device ->
+            // Here you can handle the selection change.
+            // Toggle the selected state.
+            device.isSelected = !device.isSelected
+            // If you have a save or add button, you could enable/disable it here based on the number of selected items.
+            val selectedCount = devices.count { it.isSelected }
+            // Enable the button if at least one device is selected.
+            saveButton.isEnabled = selectedCount > 0
+            // You might need to refresh the RecyclerView to update the visual state.
+            adapter.notifyDataSetChanged()
+
+        }
         val recyclerView: RecyclerView = findViewById(R.id.devicesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
@@ -54,16 +72,78 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
         }
 
         DiscoverDevicesButton.setOnClickListener {
-            DiscoverDevices(hueBridgeIp, hueBridgeUsername);
+            DiscoverDevices(hueBridgeIp, hueBridgeUsername, userId);
+        }
+
+        saveButton.setOnClickListener {
+            val selectedDevices = devices.filter {it.isSelected}
+
+            if (selectedDevices.isNotEmpty()) {
+                // Add selected devices to the user's list of devices in the database
+                addSelectedDevicesToUserList(selectedDevices, hueBridgeIp)
+
+                // Optional: Provide feedback or navigate
+                Toast.makeText(this, "Devices added successfully", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, MyDevicesActivity::class.java)
+                startActivity(intent)
+            } else {
+                // No devices selected, provide feedback
+                Toast.makeText(this, "No devices selected", Toast.LENGTH_SHORT).show()
+            }
         }
 
     }
 
-    private fun DiscoverDevices(hueIP: String?, hueUsername: String?){
+    private fun addSelectedDevicesToUserList(selectedDevices: List<DeviceDetails>, hueIP: String?) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
+
+        // Example: Assuming you have a collection of users, each with a subcollection for devices
+        selectedDevices.forEach { device ->
+            // Assuming you have a unique identifier for devices or using Firestore's automatic IDs
+            //val deviceRef = db.collection("Devices").document(userId!!).collection("devices").document()
+            //val type = ""
+
+
+            // Prepare the device data
+            val deviceData = hashMapOf(
+                "IP" to hueIP,
+                "Name: " to device.name,
+                "Status: " to device.status,
+                "Type: " to device.type,
+                "hueBridgeUsername: " to device.hueBridgeUsername,
+                "ownerUserID" to  userId
+            )
+
+            db.collection("Devices").add(deviceData)
+                .addOnSuccessListener { documentReference ->
+                    Log.d("Firestore", "Device added with ID: ${documentReference.id}")
+                    Toast.makeText(this, "Device added to the database", Toast.LENGTH_SHORT).show()
+
+                    val deviceId = documentReference.id
+                    saveDeviceIdOnUsersListOfDevices(deviceId, userId)
+                }
+        }
+    }
+
+    private fun saveDeviceIdOnUsersListOfDevices(deviceId: String, userId: String){
+        val db = FirebaseFirestore.getInstance()
+        val userDocRef = db.collection("Users").document(userId)
+
+        userDocRef.update("listOfDevices", FieldValue.arrayUnion(deviceId))
+            .addOnSuccessListener {
+                Log.d("Firestore", "Device ID added to user's listOfDevices succesfully")
+            }
+            .addOnFailureListener {e->
+                Log.w("Firestore", "Error adding device ID to user's listOfDevices",e )
+            }
+    }
+
+    private fun DiscoverDevices(hueIP: String?, hueUsername: String?, ownerUsername: String?){
         Log.d("DeviceDiscoveryActivity", "Got IP: $hueIP")
         Log.d("DeviceDiscoveryActivity", "Got Username: $hueUsername")
         val url = "http://$hueIP/api/$hueUsername/lights"
-
+        val discoveredDevices = mutableListOf<DeviceDetails>()
         val request = Request.Builder()
             .url(url)
             .get()
@@ -80,6 +160,7 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                     val responseBody = res.body?.string()
                     if (res.isSuccessful && responseBody != null) {
                         try {
+
                             val jsonObject = JSONObject(responseBody)
                             jsonObject.keys().forEach { key ->
                                 val lightObject = jsonObject.getJSONObject(key)
@@ -87,8 +168,25 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                                 val isOn = state.getBoolean("on")
                                 val name = lightObject.getString("name")
 
+                                val deviceDetails = DeviceDetails(
+                                    deviceId = key,
+                                    name = name,
+                                    status = if (isOn) "On" else "Off",
+                                    type = if (name == "Hue smart plug") "Smart Plug" else "Smart Light",
+                                    ip = hueIP ?: "",
+                                    hueBridgeUsername = hueUsername ?: "",
+                                    ownerUserID = ownerUsername ?: "",
+                                    isSelected = false
+                                )
+                                discoveredDevices.add(deviceDetails)
+
                                 Log.d("DeviceDiscoveryActivity", "Device ID: $key, Name: $name, Is On: $isOn")
                             }
+
+                            runOnUiThread{
+                                adapter.submitList(discoveredDevices)
+                            }
+
                         } catch (e: JSONException) {
                             Log.e("DeviceDiscoveryActivity", "Could not parse JSON", e)
                         }

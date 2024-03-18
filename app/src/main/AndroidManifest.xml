@@ -43,7 +43,6 @@
         <activity android:name=".AddRemoveActivity"></activity>
         <activity android:name=".HueBridgeAddingPageActivity"></activity>
         <activity android:name=".PhilipsHueController"></activity>
-        <activity android:name=".DeviceAddingActivity"></activity>
         <activity android:name=".Profile"></activity>
         <activity android:name=".DeviceDiscoveryActivity"></activity>
 

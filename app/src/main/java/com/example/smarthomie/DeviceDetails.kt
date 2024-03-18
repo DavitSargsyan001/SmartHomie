@@ -15,5 +15,6 @@ data class DeviceDetails(
     val type: String,
     val ip: String, // IP address of the device
     val hueBridgeUsername: String, // Username for Hue Bridge
-    val ownerUserID: String
+    val ownerUserID: String,
+    var isSelected: Boolean = false
 )

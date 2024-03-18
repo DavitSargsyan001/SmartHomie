@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -31,31 +32,35 @@ class MyDevicesActivity : AppCompatActivity() {
         val homeButton: ImageButton = findViewById(R.id.ibHome3)
 
         homeButton.setOnClickListener {
-        val intent = Intent(this, homePage::class.java)
-        startActivity(intent)
+            val intent = Intent(this, homePage::class.java)
+            startActivity(intent)
         }
 
-        //setupRecyclerView()
-        //observeDevices()
+        setupRecyclerView()
+        observeDevices()
     }
-    /*
+
     private fun setupRecyclerView() {
-        val adapter = DeviceAdapter(userDevices) { device ->
-            val intent = Intent(this, DeviceControlActivity::class.java).apply {
-                startActivity(intent)
-            }
 
+        val clickListener: (DeviceDetails) -> Unit = {device ->
+            // Example action: Show a toast with the device name
+            Toast.makeText(this, "Clicked on device: ${device.name}", Toast.LENGTH_SHORT).show()
 
+            // Here, you could also start an activity to show device details or perform other actions.
+            // Example:
+            // val intent = Intent(this, DeviceDetailActivity::class.java)
+            // intent.putExtra("DEVICE_ID", device.deviceId)
+            // startActivity(intent)
         }
+        val adapter = DeviceAdapter(listOf(), clickListener)
         binding.devicesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.devicesRecyclerView.adapter = adapter
     }
-
-     */
 
     private fun observeDevices() {
         viewModel.devices.observe(this, { devices ->
             (binding.devicesRecyclerView.adapter as DeviceAdapter).submitList(devices)
         })
     }
+
 }
