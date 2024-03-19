@@ -25,6 +25,7 @@ class DeviceAdapter(
     inner class DeviceViewHolder(private val binding: DeviceItemBinding) : RecyclerView.ViewHolder(binding.root){
 
     fun bind(device: DeviceDetails, clickListener: (DeviceDetails) -> Unit) {
+        Log.d("DeviceAdapter", "Binding device with name: ${device.name} and status: ${device.status}")
         binding.deviceName.text = device.name
         binding.deviceStatus.text = device.status
         Log.d("DeviceAdapter", "Device type is ${device.type}")
@@ -36,18 +37,24 @@ class DeviceAdapter(
             "Smart Plug" -> R.drawable.ic_smart_plug
             else-> R.drawable.ic_generic_device
         })
-
+/*
         if (device.isSelected) {
             itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, androidx.browser.R.color.browser_actions_bg_grey))
         } else {
             itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, androidx.constraintlayout.widget.R.color.button_material_light))
         }
-
+*/
         itemView.setOnClickListener {
-            device.isSelected = !device.isSelected
-            //updateBackgroundColor(device.isSelected)
+            if(device.isSelected == false){
+                device.isSelected = true
+            } else if (device.isSelected == true){
+                device.isSelected = false
+            }
+            //device.isSelected = !device.isSelected
+            Log.d("DeviceAdapter", "onClick - Device selected state is now ${device.isSelected}")
+            updateBackgroundColor(device.isSelected)
             clickListener(device)
-            notifyItemChanged(adapterPosition, Any())
+            notifyItemChanged(adapterPosition)
         }
     }
         private fun updateBackgroundColor(isSelected: Boolean) {

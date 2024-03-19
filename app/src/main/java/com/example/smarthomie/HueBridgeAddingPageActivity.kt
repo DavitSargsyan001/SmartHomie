@@ -265,7 +265,8 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             "Status: " to "Initializing",
             "Type: " to "HueBridge",
             "hueBridgeUsername: " to hueUserName,
-            "ownerUserID" to  userId
+            "ownerUserID" to  userId,
+            "isSelected" to false
         )
 
         db.collection("Devices").add(bridgeDetails)

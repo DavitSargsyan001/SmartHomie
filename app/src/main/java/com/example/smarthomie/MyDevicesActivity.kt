@@ -7,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,9 +15,11 @@ import kotlinx.coroutines.launch
 import com.example.smarthomie.databinding.MyDevicesBinding
 import com.example.smarthomie.DeviceViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MyDevicesActivity : AppCompatActivity() {
     private lateinit var binding: MyDevicesBinding
+    private lateinit var adapter: DeviceAdapter
     private val viewModel: DeviceViewModel by viewModels {
         //DeviceViewModel(DatabaseBuilder.getInstance(application).deviceDetailsDao())
         val deviceDao = DatabaseBuilder.getInstance(application).deviceDetailsDao()
@@ -38,29 +41,26 @@ class MyDevicesActivity : AppCompatActivity() {
 
         setupRecyclerView()
         observeDevices()
+        viewModel.fetchDevicesFromFirestore()
     }
 
     private fun setupRecyclerView() {
 
         val clickListener: (DeviceDetails) -> Unit = {device ->
-            // Example action: Show a toast with the device name
             Toast.makeText(this, "Clicked on device: ${device.name}", Toast.LENGTH_SHORT).show()
-
-            // Here, you could also start an activity to show device details or perform other actions.
-            // Example:
-            // val intent = Intent(this, DeviceDetailActivity::class.java)
-            // intent.putExtra("DEVICE_ID", device.deviceId)
-            // startActivity(intent)
         }
-        val adapter = DeviceAdapter(listOf(), clickListener)
+        adapter = DeviceAdapter(listOf(), clickListener)
         binding.devicesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.devicesRecyclerView.adapter = adapter
     }
 
-    private fun observeDevices() {
-        viewModel.devices.observe(this, { devices ->
-            (binding.devicesRecyclerView.adapter as DeviceAdapter).submitList(devices)
-        })
+    private fun observeDevices(){
+        viewModel.devicesLiveData.observe(this, Observer{ devices ->
+        // Update your RecyclerView adapter with the list of devices
+        //adapter.submitList(devices)
+        (binding.devicesRecyclerView.adapter as DeviceAdapter).submitList(devices)
+    })
     }
+
 
 }
