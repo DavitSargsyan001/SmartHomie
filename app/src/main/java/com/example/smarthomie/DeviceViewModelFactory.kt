@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.smarthomie.DeviceDetailsDao
-
+/*
 class DeviceViewModelFactory(private val deviceDao: DeviceDetailsDao, private val userId: String) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DeviceViewModel::class.java)) {
@@ -14,3 +14,4 @@ class DeviceViewModelFactory(private val deviceDao: DeviceDetailsDao, private va
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+ */

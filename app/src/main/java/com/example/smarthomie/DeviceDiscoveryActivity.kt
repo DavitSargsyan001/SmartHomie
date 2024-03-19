@@ -176,7 +176,7 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                                     name = name,
                                     status = if (isOn) "On" else "Off",
                                     type = if (name == "Hue smart plug") "Smart Plug" else "Smart Light",
-                                    ip = hueIP ?: "",
+                                    IP = hueIP ?: "",
                                     hueBridgeUsername = hueUsername ?: "",
                                     ownerUserID = ownerUsername ?: "",
                                     isSelected = false

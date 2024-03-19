@@ -365,7 +365,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             name = "Hue Bridge", // Example name
             type = "Hue Bridge",
             status = "Connected",
-            ip = bridgeIP,
+            IP = bridgeIP,
             hueBridgeUsername = HueBridgeUsername,// The username obtained from Hue API
             ownerUserID = OwnerUserID
         )

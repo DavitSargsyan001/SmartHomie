@@ -20,12 +20,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 class MyDevicesActivity : AppCompatActivity() {
     private lateinit var binding: MyDevicesBinding
     private lateinit var adapter: DeviceAdapter
-    private val viewModel: DeviceViewModel by viewModels {
+
+    private val viewModel: DeviceViewModel by viewModels ()
+    /*
+    {
         //DeviceViewModel(DatabaseBuilder.getInstance(application).deviceDetailsDao())
         val deviceDao = DatabaseBuilder.getInstance(application).deviceDetailsDao()
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: throw IllegalStateException("User not logged in")
         DeviceViewModelFactory(deviceDao, userId)
     }
+    */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +45,7 @@ class MyDevicesActivity : AppCompatActivity() {
 
         setupRecyclerView()
         observeDevices()
-        viewModel.fetchDevicesFromFirestore()
+        //viewModel.fetchDevicesFromFirestore()
     }
 
     private fun setupRecyclerView() {
@@ -57,8 +61,8 @@ class MyDevicesActivity : AppCompatActivity() {
     private fun observeDevices(){
         viewModel.devicesLiveData.observe(this, Observer{ devices ->
         // Update your RecyclerView adapter with the list of devices
-        //adapter.submitList(devices)
-        (binding.devicesRecyclerView.adapter as DeviceAdapter).submitList(devices)
+        adapter.submitList(devices)
+        //(binding.devicesRecyclerView.adapter as DeviceAdapter).submitList(devices)
     })
     }
 

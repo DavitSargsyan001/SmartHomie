@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.smarthomie.DeviceDetailsDao
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 /*
@@ -25,7 +26,7 @@ class DeviceViewModel(private val deviceDao: DeviceDetailsDao, private val userI
         }
     }
 }
-*/
+
 class DeviceViewModel(private val deviceDao: DeviceDetailsDao, private val userId: String) : ViewModel() {
     private val _devicesLiveData = MutableLiveData<List<DeviceDetails>>()
     val devicesLiveData: LiveData<List<DeviceDetails>> = _devicesLiveData
@@ -38,6 +39,37 @@ class DeviceViewModel(private val deviceDao: DeviceDetailsDao, private val userI
                 val deviceList = queryDocumentSnapshots.documents.mapNotNull { document ->
                     document.toObject(DeviceDetails::class.java)?.apply {
                         deviceId = document.id // Ensure your DeviceDetails class has a deviceId property to assign this
+                        Log.d("DeviceViewModel", "Device ID that we get $deviceId  or ${document.id}")
+                    }
+                }
+                _devicesLiveData.postValue(deviceList)
+            }
+            .addOnFailureListener { e ->
+                Log.e("DeviceViewModel", "Error fetching devices", e)
+            }
+    }
+}
+*/
+
+class DeviceViewModel : ViewModel() {
+    private val _devicesLiveData = MutableLiveData<List<DeviceDetails>>()
+    val devicesLiveData: LiveData<List<DeviceDetails>> = _devicesLiveData
+    private val userId: String = FirebaseAuth.getInstance().currentUser?.uid
+        ?: throw IllegalStateException("User not logged in")
+
+    init {
+        fetchDevicesFromFirestore()
+    }
+
+    private fun fetchDevicesFromFirestore() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("Devices").whereEqualTo("ownerUserID", userId)
+            .get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+                val deviceList = queryDocumentSnapshots.documents.mapNotNull { document ->
+                    document.toObject(DeviceDetails::class.java)?.apply {
+                        deviceId = document.id
+                        Log.d("DeviceViewModel", "Fetched device: Name=$name, Status=$status, Type=$type")
                     }
                 }
                 _devicesLiveData.postValue(deviceList)

@@ -31,7 +31,7 @@ class DeviceAdapter(
         Log.d("DeviceAdapter", "Device type is ${device.type}")
         binding.deviceIcon.setImageResource(when (device.type){
 
-            "Hue Bridge" -> R.drawable.ic_hue_bridge
+            "HueBridge" -> R.drawable.ic_hue_bridge
             "Thermostat" -> R.drawable.ic_thermostat
             "Light bulb" -> R.drawable.ic_light_bulb
             "Smart Plug" -> R.drawable.ic_smart_plug

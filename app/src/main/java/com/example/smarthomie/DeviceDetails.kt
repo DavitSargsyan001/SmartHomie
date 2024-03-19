@@ -8,19 +8,21 @@ import com.google.firebase.firestore.PropertyName
 enum class DeviceType {
     HUE_BRIDGE , THERMOSTAT, LIGHTBULB, SMART_PLUG
 }
-/*
+
 @Entity
 data class DeviceDetails(
     @PrimaryKey var deviceId: String = "", // Unique ID for the device
-    var Name: String = "", // Name of the device
-    var Status: String? = null, // Status, e.g., "Connected"
-    var Type: String = "",
-    var IP: String = "", // IP address of the device
-    var hueBridgeUsername: String = "", // Username for Hue Bridge
-    var ownerUserID: String = "",
-    var isSelected: Boolean = false
+    @get:PropertyName("Name: ") @set:PropertyName("Name: ") var name: String? = null,
+    @get:PropertyName("Status: ") @set:PropertyName("Status: ") var status: String? = null,
+    //var Status : String? = null, // Status, e.g., "Connected"
+    @get:PropertyName("Type: ") @set:PropertyName("Type: ") var type: String? = null,
+    //var Type : String = "",
+    var IP : String = "", // IP address of the device
+    var hueBridgeUsername : String = "", // Username for Hue Bridge
+    var ownerUserID : String = "",
+    var isSelected : Boolean = false
 )
-*/
+/*
 @Entity
 data class DeviceDetails(
     @PrimaryKey
@@ -34,4 +36,4 @@ data class DeviceDetails(
     @PropertyName("isSelected") var isSelected: Boolean = false,
     //@Ignore // Since isSelected is not a field in Firestore, we tell Room to ignore it
     //var isSelected: Boolean = false
-)
+)*/
