@@ -68,7 +68,7 @@ class DeviceViewModel : ViewModel() {
             .addOnSuccessListener { queryDocumentSnapshots ->
                 val deviceList = queryDocumentSnapshots.documents.mapNotNull { document ->
                     document.toObject(DeviceDetails::class.java)?.apply {
-                        deviceId = document.id
+                        deviceId = document.getString("numericID") ?: ""
                         Log.d("DeviceViewModel", "Fetched device: Name=$name, Status=$status, Type=$type")
                     }
                 }

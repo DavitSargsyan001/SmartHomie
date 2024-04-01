@@ -266,7 +266,8 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             "Type: " to "HueBridge",
             "hueBridgeUsername: " to hueUserName,
             "ownerUserID" to  userId,
-            "isSelected" to false
+            "isSelected" to false,
+            "numericID" to "N/A"
         )
 
         db.collection("Devices").add(bridgeDetails)
@@ -365,9 +366,10 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             name = "Hue Bridge", // Example name
             type = "Hue Bridge",
             status = "Connected",
-            IP = bridgeIP,
+            ip = bridgeIP,
             hueBridgeUsername = HueBridgeUsername,// The username obtained from Hue API
-            ownerUserID = OwnerUserID
+            ownerUserID = OwnerUserID,
+
         )
 
         lifecycleScope.launch(Dispatchers.IO) {

@@ -54,7 +54,7 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
         val homeButton: ImageButton = findViewById(R.id.ibHome2)
         saveButton.isEnabled = false
 
-        adapter = DeviceAdapter(devices) {device ->
+        adapter = DeviceAdapter(devices, AdapterContext.DEVICE_DISCOVERY) { device ->
             // Here we handle the selection change.
             // Toggle the selected state.
             //-device.isSelected = !device.isSelected
@@ -66,8 +66,10 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
             // You might need to refresh the RecyclerView to update the visual state.
             Log.d("DeviceDiscoveryActivity", "Index of device:  ${devices.indexOf(device)}")
             adapter.notifyItemChanged(devices.indexOf(device))
-
+            //adapter.notifyDataSetChanged(AdapterContext.DEVICE_DISCOVERY)//AdapterContext.DEVICE_DISCOVERY
         }
+
+
         val recyclerView: RecyclerView = findViewById(R.id.devicesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
@@ -114,7 +116,9 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                 "Type: " to device.type,
                 "hueBridgeUsername: " to device.hueBridgeUsername,
                 "ownerUserID" to  userId,
-                "isSelected" to false
+                "isSelected" to false,
+                "id" to device.id,
+                "numericID" to device.deviceId
             )
 
             db.collection("Devices").add(deviceData)
@@ -170,16 +174,18 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                                 val state = lightObject.getJSONObject("state")
                                 val isOn = state.getBoolean("on")
                                 val name = lightObject.getString("name")
+                                val uniqueId = lightObject.getString("uniqueid")
 
                                 val deviceDetails = DeviceDetails(
                                     deviceId = key,
                                     name = name,
                                     status = if (isOn) "On" else "Off",
                                     type = if (name == "Hue smart plug") "Smart Plug" else "Smart Light",
-                                    IP = hueIP ?: "",
+                                    ip = hueIP ?: "",
                                     hueBridgeUsername = hueUsername ?: "",
                                     ownerUserID = ownerUsername ?: "",
-                                    isSelected = false
+                                    isSelected = false,
+                                    id = uniqueId
                                 )
                                 discoveredDevices.add(deviceDetails)
 
