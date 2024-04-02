@@ -13,6 +13,7 @@ import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
 import com.example.smarthomie.databinding.DeviceControllableItemBinding
+import com.google.firebase.firestore.FirebaseFirestore
 
 interface DeviceActionListener {
     fun onPerformQuickAction(device: DeviceDetails)
@@ -30,14 +31,32 @@ enum class AdapterContext {
 * so that we could display more info such as device type, mac address potentially, and other relevant info about the device on a separate page
 * */
 class DeviceAdapter(
-    private var devices: List<DeviceDetails> = listOf(),
+    private var devices: MutableList<DeviceDetails> = mutableListOf(),
     private val contextType: AdapterContext,
     private val actionListener: DeviceActionListener? = null,
     private val clickListener: (DeviceDetails) -> Unit,
      // for understanding which page we are working with such as discover devices or my devices
     ) : RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
 
-    fun submitList(newDevices: List<DeviceDetails>){
+    fun getDeviceAtPosition(position: Int): DeviceDetails {
+        return devices[position]
+    }
+
+    fun removeDeviceAtPosition(device: DeviceDetails,position: Int) {
+        val deviceIdToRemove = devices[position].documentID
+        // Remove from Firestore
+        FirebaseFirestore.getInstance().collection("Devices").document(device.documentID!!).delete()
+            .addOnSuccessListener {
+                Log.d("DeviceAdapter", "Device successfully deleted!")
+                devices.removeAt(position)
+                notifyItemRemoved(position)
+            }
+            .addOnFailureListener { e ->
+                Log.w("DeviceAdapter", "Error deleting device", e)
+            }
+    }
+
+    fun submitList(newDevices: MutableList<DeviceDetails>){
         devices = newDevices
         notifyDataSetChanged()
     }

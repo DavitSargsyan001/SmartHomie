@@ -1,5 +1,6 @@
 package com.example.smarthomie
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
@@ -49,7 +51,52 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
         deviceControlService = DeviceControlService()
         setupRecyclerView()
         observeDevices()
-        //viewModel.fetchDevicesFromFirestore()
+
+        ////Adding swipe method for each item in the recycler view
+        val itemTouchHelperCallback =
+            object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return false // We don't want move functionality here
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val position = viewHolder.adapterPosition // Get the swiped item position
+                    val deviceToDelete = adapter.getDeviceAtPosition(position)
+
+                    // Show confirmation dialog
+                    AlertDialog.Builder(this@MyDevicesActivity)
+                        .setTitle("Delete Device")
+                        .setMessage("Are you sure you want to delete this device?")
+                        .setPositiveButton("Delete") { dialog, which ->
+                            // Proceed with deletion
+                            adapter.removeDeviceAtPosition(deviceToDelete, position)
+                        }
+                        .setNegativeButton("Cancel") { dialog, which ->
+                            // Cancel the deletion and reset the item
+                            adapter.notifyItemChanged(position)
+                        }
+                        .setOnCancelListener {
+                            // In case the dialog is dismissed, reset the item
+                            adapter.notifyItemChanged(position)
+                        }
+                        .show()
+                }
+
+                //adapter.removeDeviceAtPosition(position) // Call your method to remove the device from Firestore
+                //adapter.notifyItemRemoved(position) // Notify the adapter that an item was removed
+            }
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(binding.devicesRecyclerView)
+
+
+
+
+       ////End of adding swipe method
+
     }
 
     private fun setupRecyclerView() {
@@ -60,7 +107,7 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
 
         }
 
-        adapter = DeviceAdapter(listOf(),  AdapterContext.MY_DEVICES, this, clickListener)
+        adapter = DeviceAdapter(mutableListOf(),  AdapterContext.MY_DEVICES, this, clickListener)
         binding.devicesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.devicesRecyclerView.adapter = adapter
     }
@@ -68,7 +115,7 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
     private fun observeDevices(){
         viewModel.devicesLiveData.observe(this, Observer{ devices ->
         // Update your RecyclerView adapter with the list of devices
-        adapter.submitList(devices)
+        adapter.submitList(devices.toMutableList())
         //(binding.devicesRecyclerView.adapter as DeviceAdapter).submitList(devices)
     })
     }
@@ -87,6 +134,7 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
                 runOnUiThread {
                     if (success) {
                         // Update device status in UI accordingly
+                        device.status = if (isOn) "Off" else "On"
                         Toast.makeText(this, "Device toggled successfully", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this, "Failed to toggle device", Toast.LENGTH_SHORT).show()

@@ -16,6 +16,7 @@ class DeviceControlService {
     fun toggleDeviceOnOff(deviceId: String, isOn: Boolean, hueBridgeIp: String, hueUsername: String, callback: (Boolean) -> Unit) {
         Log.d("DeviceControlService", "bridge IP: $hueBridgeIp  bridge username: $hueUsername device numeric ID: $deviceId")
         val url = "http://$hueBridgeIp/api/$hueUsername/lights/$deviceId/state"
+        Log.d("DeviceControlService","is it ON? : $isOn")
         val requestBody = JSONObject().apply {
             put("on", isOn)
         }.toString().toRequestBody("application/json".toMediaTypeOrNull())

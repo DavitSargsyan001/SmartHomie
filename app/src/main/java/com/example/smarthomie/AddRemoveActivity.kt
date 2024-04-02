@@ -24,6 +24,13 @@ class AddRemoveActivity : AppCompatActivity() {
         val removeButton: Button = findViewById(R.id.button6)
         val homePage: ImageButton = findViewById(R.id.ibHome2)
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: throw IllegalStateException("User not logged in")
+        val addBridgeBtn: Button = findViewById(R.id.button7)
+
+        addBridgeBtn.setOnClickListener {
+            val intent = Intent(this, HueBridgeAddingPageActivity::class.java)
+            startActivity(intent)
+        }
+
 
         addButton.setOnClickListener {
            checkForHueBridge(userId)

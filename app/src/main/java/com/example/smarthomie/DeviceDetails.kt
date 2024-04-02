@@ -26,6 +26,7 @@ data class DeviceDetails(
     @get:PropertyName("isSelected") @set:PropertyName("isSelected") var isSelected: Boolean = false,
     //var isSelected : Boolean = false
     @get:PropertyName("id") @set:PropertyName("id") var id: String? = null,
+    @get:PropertyName("documentID") @set:PropertyName("documentID") var documentID: String? = null,
     //@get:PropertyName("numericID") @set:PropertyName("numericID") var numericID: String? = null,
 
 )

@@ -267,7 +267,8 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             "hueBridgeUsername: " to hueUserName,
             "ownerUserID" to  userId,
             "isSelected" to false,
-            "numericID" to "N/A"
+            "numericID" to "N/A",
+
         )
 
         db.collection("Devices").add(bridgeDetails)
@@ -276,6 +277,7 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
                 Toast.makeText(this, "Device added to the database", Toast.LENGTH_SHORT).show()
 
                 val deviceId = documentReference.id // Firestore document ID as Device ID
+                bridgeDetails["documentID"] = deviceId
                 saveDeviceIdOnUsersListOfDevices(deviceId, userId)
                 lifecycleScope.launch(Dispatchers.IO) {
                 SaveBridgeDetailsToLocalDatabase(deviceId, bridgeIp, hueUserName, userId)

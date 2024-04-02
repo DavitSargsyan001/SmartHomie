@@ -127,6 +127,7 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                     Toast.makeText(this, "Device added to the database", Toast.LENGTH_SHORT).show()
 
                     val deviceId = documentReference.id
+                    device.documentID = deviceId
                     saveDeviceIdOnUsersListOfDevices(deviceId, userId)
 
                 }
@@ -195,7 +196,7 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                             runOnUiThread{
                                 devices.clear()
                                 devices.addAll(discoveredDevices)
-                                adapter.submitList(devices.toList())
+                                adapter.submitList(devices.toMutableList())
                             }
 
                         } catch (e: JSONException) {

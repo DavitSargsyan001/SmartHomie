@@ -65,5 +65,17 @@
         app:layout_constraintVertical_bias="0.721"
         app:srcCompat="@drawable/home_duotone" />
 
+    <Button
+        android:id="@+id/button7"
+        android:layout_width="251dp"
+        android:layout_height="48dp"
+        android:text="Add hue bridge"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.645" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
