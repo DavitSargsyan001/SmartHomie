@@ -379,11 +379,6 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
             db.deviceDetailsDao().insert(deviceDetails)
         }
     }
-
-
-
-
-
 }
 
 
