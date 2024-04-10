@@ -45,6 +45,8 @@
         <activity android:name=".PhilipsHueController"></activity>
         <activity android:name=".Profile"></activity>
         <activity android:name=".DeviceDiscoveryActivity"></activity>
+        <activity android:name=".ChangeEmailActivity"></activity>
+
 
     </application>
 
