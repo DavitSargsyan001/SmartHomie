@@ -119,6 +119,7 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                 "isSelected" to false,
                 "id" to device.id,
                 "numericID" to device.deviceId
+
             )
 
             db.collection("Devices").add(deviceData)
@@ -126,10 +127,24 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                     Log.d("Firestore", "Device added with ID: ${documentReference.id}")
                     Toast.makeText(this, "Device added to the database", Toast.LENGTH_SHORT).show()
 
-                    val deviceId = documentReference.id
-                    device.documentID = deviceId
-                    saveDeviceIdOnUsersListOfDevices(deviceId, userId)
-
+                    //db.collection("Devices").add(documentReference.id to "documentID") ////// THIS LINE CHECK IF I AM CORRECTLY ADDING THE DOCUMENT ID UPON SUCCESFULL CREATION OF A DEVICE DOCUMENT IN THE DATABASE
+                    //val deviceId = documentReference.id
+                    //device.documentID = documentReference.id
+                    val documentID = documentReference.id
+                    db.collection("Devices").document(documentID)
+                        .update("documentID", documentID)
+                        .addOnSuccessListener {
+                            Log.d("Firestore","Device documentID updated with ID: $documentID")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("Firestore","Error updating device with documentID",e)
+                        }
+                    Toast.makeText(this, "Device added to the database", Toast.LENGTH_SHORT).show()
+                    saveDeviceIdOnUsersListOfDevices(documentID, userId)
+                }
+                .addOnFailureListener { e ->
+                    Log.w("Firestore", "Error adding device", e)
+                    Toast.makeText(this, "Device not added to the database due to errors!", Toast.LENGTH_SHORT).show()
                 }
         }
     }

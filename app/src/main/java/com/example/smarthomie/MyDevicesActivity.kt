@@ -73,7 +73,11 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
                         .setMessage("Are you sure you want to delete this device?")
                         .setPositiveButton("Delete") { dialog, which ->
                             // Proceed with deletion
-                            adapter.removeDeviceAtPosition(deviceToDelete, position)
+                            lifecycleScope.launch {
+                                adapter.removeDeviceAtPosition(deviceToDelete, position)
+                                // Update UI after network operation
+                                adapter.notifyItemRemoved(position)
+                            }
                         }
                         .setNegativeButton("Cancel") { dialog, which ->
                             // Cancel the deletion and reset the item

@@ -277,6 +277,15 @@ class HueBridgeAddingPageActivity : AppCompatActivity(){
                 Toast.makeText(this, "Device added to the database", Toast.LENGTH_SHORT).show()
 
                 val deviceId = documentReference.id // Firestore document ID as Device ID
+                val documentID = documentReference.id
+                db.collection("Devices").document(documentID)
+                    .update("documentID", documentID)
+                    .addOnSuccessListener {
+                        Log.d("Firestore","Device documentID updated with ID: $documentID")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("Firestore","Error updating device with documentID",e)
+                    }
                 bridgeDetails["documentID"] = deviceId
                 saveDeviceIdOnUsersListOfDevices(deviceId, userId)
                 lifecycleScope.launch(Dispatchers.IO) {

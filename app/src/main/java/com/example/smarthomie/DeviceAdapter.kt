@@ -13,6 +13,8 @@ import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
 import com.example.smarthomie.databinding.DeviceControllableItemBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 interface DeviceActionListener {
@@ -41,10 +43,19 @@ class DeviceAdapter(
     fun getDeviceAtPosition(position: Int): DeviceDetails {
         return devices[position]
     }
+/* OLD METHOD
+    suspend fun removeDeviceAtPosition(device: DeviceDetails,position: Int) {
+        val userDocRef = FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
+            FirebaseFirestore.getInstance().collection("Users").document(userId)
+        } ?: return
 
-    fun removeDeviceAtPosition(device: DeviceDetails,position: Int) {
         val deviceIdToRemove = devices[position].documentID
         // Remove from Firestore
+        Log.d("DeviceAdapter", "Device ID to be deleted: ${device.documentID}")
+
+        FirebaseFirestore.getInstance().collection("Users").document()
+
+
         FirebaseFirestore.getInstance().collection("Devices").document(device.documentID!!).delete()
             .addOnSuccessListener {
                 Log.d("DeviceAdapter", "Device successfully deleted!")
@@ -55,6 +66,34 @@ class DeviceAdapter(
                 Log.w("DeviceAdapter", "Error deleting device", e)
             }
     }
+*/
+/*New Method*/
+suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
+    val userDocRef = FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
+        FirebaseFirestore.getInstance().collection("Users").document(userId)
+    } ?: return
+
+    val deviceDocIdToRemove = device.documentID ?: return
+
+    // Begin a batch write to ensure atomic operations
+    val batch = FirebaseFirestore.getInstance().batch()
+
+    // Remove the device from the 'Devices' collection
+    val deviceDocRef = FirebaseFirestore.getInstance().collection("Devices").document(deviceDocIdToRemove)
+    batch.delete(deviceDocRef)
+
+    // Remove the device's document ID from the user's list of devices
+    batch.update(userDocRef, "listOfDevices", FieldValue.arrayRemove(deviceDocIdToRemove))
+
+    // Commit the batch operation
+    batch.commit().addOnSuccessListener {
+        Log.d("DeviceAdapter", "Device successfully deleted from the user's list and Devices collection")
+        devices.removeAt(position)
+        notifyItemRemoved(position)
+    }.addOnFailureListener { e ->
+        Log.w("DeviceAdapter", "Error during batch delete", e)
+    }
+}
 
     fun submitList(newDevices: MutableList<DeviceDetails>){
         devices = newDevices
