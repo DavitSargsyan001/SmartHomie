@@ -25,7 +25,7 @@ public class Profile extends AppCompatActivity {
     private FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState); 
         setContentView(R.layout.profile_page);
 
         auth = FirebaseAuth.getInstance();
