@@ -12,7 +12,6 @@ import android.widget.ExpandableListView.OnChildClickListener
 import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
-import com.example.smarthomie.databinding.DeviceControllableItem2Binding
 import com.example.smarthomie.databinding.DeviceControllableItemBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -23,7 +22,7 @@ interface DeviceActionListener {
 }
 
 enum class AdapterContext {
-    MY_DEVICES, DEVICE_DISCOVERY, MY_DEVICES2
+    MY_DEVICES, DEVICE_DISCOVERY
 }
 /*
 * Passing context type to know which activity is accessing Device Adapter
@@ -146,18 +145,6 @@ suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
                 }
 
             }
-            is DeviceControllableItem2Binding -> {
-                binding.deviceName.text = device.name
-                binding.deviceStatus.text = device.status
-                binding.deviceIcon.setImageResource(when (device.type){
-
-                    "HueBridge" -> R.drawable.ic_hue_bridge
-                    "Thermostat" -> R.drawable.ic_thermostat
-                    "Light bulb" -> R.drawable.ic_light_bulb
-                    "Smart Plug" -> R.drawable.ic_smart_plug
-                    else-> R.drawable.ic_generic_device
-                })
-            }
         }
 
         itemView.setOnClickListener {
@@ -172,9 +159,6 @@ suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
                     updateBackgroundColor(device.isSelected)
                     clickListener(device)
                     notifyItemChanged(adapterPosition)
-                }
-                AdapterContext.MY_DEVICES2-> {
-
                 }
             }
         }
@@ -200,7 +184,6 @@ suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
         val binding = when (contextType){
             AdapterContext.MY_DEVICES -> DeviceControllableItemBinding.inflate(layoutInflater, parent, false)
             AdapterContext.DEVICE_DISCOVERY -> DeviceItemBinding.inflate(layoutInflater, parent, false)
-            AdapterContext.MY_DEVICES2 -> DeviceControllableItem2Binding.inflate(layoutInflater, parent, false)
         }
         return DeviceViewHolder(binding);
 
