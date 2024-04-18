@@ -1,15 +1,11 @@
 package com.example.smarthomie
 
+import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smarthomie.databinding.DeviceItemBinding
 import android.util.Log
-import android.widget.ExpandableListView.OnChildClickListener
-import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
 import com.example.smarthomie.databinding.DeviceControllableItemBinding
@@ -37,37 +33,15 @@ class DeviceAdapter(
     private val contextType: AdapterContext,
     private val actionListener: DeviceActionListener? = null,
     private val clickListener: (DeviceDetails) -> Unit,
+    private val detailClickListener: ((DeviceDetails) -> Unit)? = null
      // for understanding which page we are working with such as discover devices or my devices
     ) : RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
 
     fun getDeviceAtPosition(position: Int): DeviceDetails {
         return devices[position]
     }
-/* OLD METHOD
-    suspend fun removeDeviceAtPosition(device: DeviceDetails,position: Int) {
-        val userDocRef = FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
-            FirebaseFirestore.getInstance().collection("Users").document(userId)
-        } ?: return
-
-        val deviceIdToRemove = devices[position].documentID
-        // Remove from Firestore
-        Log.d("DeviceAdapter", "Device ID to be deleted: ${device.documentID}")
-
-        FirebaseFirestore.getInstance().collection("Users").document()
 
 
-        FirebaseFirestore.getInstance().collection("Devices").document(device.documentID!!).delete()
-            .addOnSuccessListener {
-                Log.d("DeviceAdapter", "Device successfully deleted!")
-                devices.removeAt(position)
-                notifyItemRemoved(position)
-            }
-            .addOnFailureListener { e ->
-                Log.w("DeviceAdapter", "Error deleting device", e)
-            }
-    }
-*/
-/*New Method*/
 suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
     val userDocRef = FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
         FirebaseFirestore.getInstance().collection("Users").document(userId)
@@ -111,7 +85,7 @@ suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
 
                     "HueBridge" -> R.drawable.ic_hue_bridge
                     "Thermostat" -> R.drawable.ic_thermostat
-                    "Light bulb" -> R.drawable.ic_light_bulb
+                    "Smart Light" -> R.drawable.ic_light_bulb
                     "Smart Plug" -> R.drawable.ic_smart_plug
                     else-> R.drawable.ic_generic_device
                 })
@@ -128,7 +102,7 @@ suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
 
                     "HueBridge" -> R.drawable.ic_hue_bridge
                     "Thermostat" -> R.drawable.ic_thermostat
-                    "Light bulb" -> R.drawable.ic_light_bulb
+                    "Smart Light" -> R.drawable.ic_light_bulb
                     "Smart Plug" -> R.drawable.ic_smart_plug
                     else-> R.drawable.ic_generic_device
                 })
@@ -142,6 +116,21 @@ suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
 
                 binding.quickActionButton.setOnClickListener {
                     actionListener?.onPerformQuickAction(device)
+                }
+
+                binding.deviceInfoContainer.setOnClickListener {
+                    val context = it.context
+                    val intent = when (device.type) {
+                        "HueBridge" -> Intent(context, BridgeDetailActivity::class.java)
+                        "Smart Light" -> Intent(context, LightDetailActivity::class.java)
+                        "Smart Plug" -> Intent(context, PlugDetailActivity::class.java)
+                        else -> null
+                    }
+                    intent?.apply {
+                        putExtra("DEVICE_ID", device.deviceId)
+                        context.startActivity(this)
+                    }
+                    //detailClickListener?.let { it1 -> it1(device) }
                 }
 
             }
