@@ -2,6 +2,7 @@ package com.example.smarthomie;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -11,12 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,9 +22,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -69,19 +67,20 @@ public class Scenarios extends AppCompatActivity {
         userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    // Get the list of devices from the document
-                    List<String> listOfDevices = (List<String>) documentSnapshot.get("listOfDevices");
-                    if (listOfDevices != null && !listOfDevices.isEmpty()) {
-
-                        // Retrieve IP and hueBridgeUsername from Firestore for the first device
-                        String firstDeviceName = listOfDevices.get(0);
-                        retrieveDeviceInfo(firstDeviceName);
-                    } else {
-                        Toast.makeText(Scenarios.this, "No devices found", Toast.LENGTH_SHORT).show();
+                List<?> listOfDevices = (List<?>) documentSnapshot.get("listOfDevices");
+                if (listOfDevices != null && !listOfDevices.isEmpty()) {
+                    List<String> deviceNames = new ArrayList<>();
+                    for (Object device : listOfDevices) {
+                        if (device instanceof String) {
+                            deviceNames.add((String) device);
+                        } else {
+                            // Handle unexpected types if necessary
+                            Toast.makeText(Scenarios.this, "No devices found", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                } else {
-                    Toast.makeText(Scenarios.this, "User document does not exist", Toast.LENGTH_SHORT).show();
+                    // Retrieve IP and hueBridgeUsername from Firestore for the first device
+                    String firstDeviceName = deviceNames.get(0);
+                    retrieveDeviceInfo(firstDeviceName);
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -182,156 +181,102 @@ public class Scenarios extends AppCompatActivity {
             }
         });
     }
-    //Method to change brightness relating to time
-    // Method to simulate a sunrise wake-up routine
-    private void increaseBrightness(String url, int durationInSeconds) {
+
+    // Gradually Increase brightness For wake up Scenario
+    private void increaseBrightness(final String url, final int durationInSeconds) {
         configureSSL();
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-
         // Get Brightness integer
-        int numSteps = durationInSeconds;
-        int initialBrightness = 1; // Starting brightness
-        int finalBrightness = 254; // Maximum brightness
-        int brightnessIncrement = (finalBrightness - initialBrightness) / numSteps;
+        final int numSteps = durationInSeconds;
+        final int initialBrightness = 1; // Starting brightness
+        final int finalBrightness = 254; // Maximum brightness
+        final int brightnessIncrement = (finalBrightness - initialBrightness) / numSteps;
 
-        // Timer to increase brightness gradually
-        for (int i = 0; i < numSteps; i++) {
-            final int brightness = initialBrightness + i * brightnessIncrement;
+        // Create a separate thread to send requests with delay
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < numSteps; i++) {
+                    final int brightness = initialBrightness + i * brightnessIncrement;
 
-            //Sending request
-            String requestBody = "{\"on\": true, \"bri\": " + brightness + "}";
-            StringRequest stringRequest = new StringRequest(Request.Method.PUT, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.d("Increasing Brightness", "Response from server: " + response);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("Increasing Brightness", "Error increasing brightness: " + error.getMessage());
+                    //Sending request with delay
+                    String requestBody = "{\"on\": true, \"bri\": " + brightness + "}";
+                    sendRequestWithDelay(url, requestBody, i * 1000); // Delay request by i seconds
                 }
-            }) {
-                @Override
-                public byte[] getBody() {
-                    return requestBody.getBytes();
-                }
+            }
+        }).start();
+    }
 
-                @Override
-                public String getBodyContentType() {
-                    return "application/json";
-                }
-            };
+    // Method to send HTTP request with delay
+    private void sendRequestWithDelay(final String url, final String requestBody, final int delayInMillis) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new android.os.Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendRequest(url, requestBody);
+                    }
+                }, delayInMillis);
+            }
+        });
+    }
 
-            // Delaying request
-            int delayInMillis = i * 1000; // 1000 milliseconds = 1 second
-            new android.os.Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    requestQueue.add(stringRequest);
+
+    // Method to send HTTP request
+    private void sendRequest(final String urlString, final String requestBody) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection urlConnection = null;
+                try {
+                    URL url = new URL(urlString);
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("PUT");
+                    urlConnection.setRequestProperty("Content-Type", "application/json");
+                    urlConnection.setDoOutput(true);
+                    DataOutputStream outputStream = new DataOutputStream(urlConnection.getOutputStream());
+                    outputStream.writeBytes(requestBody);
+                    outputStream.flush();
+                    outputStream.close();
+                    int responseCode = urlConnection.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        Log.d("HTTP Request", "Request sent successfully");
+                    } else {
+                        Log.e("HTTP Request", "Error sending request. Response code: " + responseCode);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("HTTP Request", "IOException: " + e.getMessage());
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
                 }
-            }, delayInMillis);
-        }
+            }
+        }).start();
     }
 
     //Method to dim light for ECO Mode
     private void ecoMode(String url){
-        configureSSL();
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String requestBody = "{\"on\": true, \"bri\": " + ecoBrightness + "}";
-        StringRequest stringRequest = new StringRequest(Request.Method.PUT, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("LightControl", "Response from server: " + response);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Handle error
-            }
-        }) {
-            @Override
-            public byte[] getBody() {
-                return requestBody.getBytes();
-            }
-
-            @Override
-            public String getBodyContentType() {
-                return "application/json";
-            }
-        };
-
-        // Add the request to the RequestQueue
-        requestQueue.add(stringRequest);
-    }
-
-    // Method to turn off Devices
+            configureSSL();
+            // Sending request to set eco mode
+            String requestBody = "{\"on\": true, \"bri\": " + ecoBrightness + "}";
+            sendRequest(url, requestBody);
+        }
+        //Method to turn off devices
     private void turnOffDevice(String url) {
         configureSSL();
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Sending request to turn off light
         String requestBody = "{\"on\": false}";
-
-        StringRequest stringRequest = new StringRequest(Request.Method.PUT, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("LightControl", "Response from server: " + response);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Handle error
-            }
-        }) {
-            @Override
-            public byte[] getBody() {
-                return requestBody.getBytes();
-            }
-
-            @Override
-            public String getBodyContentType() {
-                return "application/json";
-            }
-        };
-
-        // Add the request to the RequestQueue
-        requestQueue.add(stringRequest);
+        sendRequest(url,requestBody);
     }
 
     // Method to turn on devices
     private void turnOnDevice(String url) {
         configureSSL();
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Sending request to turn on light
         String requestBody = "{\"on\": true}";
-
-        StringRequest stringRequest = new StringRequest(Request.Method.PUT, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("LightControl", "Response from server: " + response);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Handle error
-            }
-        }) {
-            @Override
-            public byte[] getBody() {
-                return requestBody.getBytes();
-            }
-
-            @Override
-            public String getBodyContentType() {
-                return "application/json";
-            }
-        };
-
-        // Add the request to the RequestQueue
-        requestQueue.add(stringRequest);
+        sendRequest(url,requestBody);
     }
 
     // SSL handshake error fix
