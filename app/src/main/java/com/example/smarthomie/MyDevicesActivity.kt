@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import com.example.smarthomie.databinding.MyDevicesBinding
+import com.example.smarthomie.DeviceDetailsActivity
 import com.example.smarthomie.DeviceViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,14 +29,6 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
     private lateinit var adapter: DeviceAdapter
     private lateinit var deviceControlService: DeviceControlService
     private val viewModel: DeviceViewModel by viewModels ()
-    /*
-    {
-        //DeviceViewModel(DatabaseBuilder.getInstance(application).deviceDetailsDao())
-        val deviceDao = DatabaseBuilder.getInstance(application).deviceDetailsDao()
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: throw IllegalStateException("User not logged in")
-        DeviceViewModelFactory(deviceDao, userId)
-    }
-    */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,11 +100,28 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
 
         val clickListener: (DeviceDetails) -> Unit = {device ->
             Toast.makeText(this, "Clicked on device: ${device.name}", Toast.LENGTH_SHORT).show()
-
-
         }
 
-        adapter = DeviceAdapter(mutableListOf(),  AdapterContext.MY_DEVICES, this, clickListener)
+        adapter = DeviceAdapter(
+            mutableListOf(),
+            AdapterContext.MY_DEVICES,
+            this,
+            { device ->
+                Toast.makeText(this, "Quick action on: ${device.name}", Toast.LENGTH_SHORT).show()
+            },
+            {device ->
+                val context = this@MyDevicesActivity
+                val intent = when (device.type) {
+                    "Hue Bridge" -> Intent(context, BridgeDetailActivity::class.java)
+                    "Smart Light" -> Intent(context, LightDetailActivity::class.java)
+                    "Smart Plug" -> Intent(context, PlugDetailActivity::class.java)
+                    else -> return@DeviceAdapter
+                }
+                intent.putExtra("DEVICE_ID", device.deviceId)
+                context.startActivity(intent)
+
+            }
+            )
         binding.devicesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.devicesRecyclerView.adapter = adapter
     }
@@ -125,19 +135,12 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
     }
 
     override fun onPerformQuickAction(device: DeviceDetails) {
-        /*
-        Toast.makeText(this, "Quick action for ${device.name}", Toast.LENGTH_SHORT).show()
-        val hueBridgeIP = device.ip
-        val hueUsername = device.hueBridgeUsername
-        Log.d("MyDevicesActivity", "IP: ${device.ip}  Hue Username: ${device.hueBridgeUsername}  Device Status: ${device.status}")
-        val url = "http://$hueBridgeIP/api/$hueUsername/lights"
-*/
-        //{
-            val isOn = device.status == "On" // Determine the current state based on your status representation
+
+            val isOn = device.status == "On"
             deviceControlService.toggleDeviceOnOff(device.deviceId!!, !isOn, device.ip!!, device.hueBridgeUsername!!) { success ->
                 runOnUiThread {
                     if (success) {
-                        // Update device status in UI accordingly
+
                         device.status = if (isOn) "Off" else "On"
                         Toast.makeText(this, "Device toggled successfully", Toast.LENGTH_SHORT).show()
                     } else {
