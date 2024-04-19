@@ -120,17 +120,10 @@ suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
 
                 binding.deviceInfoContainer.setOnClickListener {
                     val context = it.context
-                    val intent = when (device.type) {
-                        "HueBridge" -> Intent(context, BridgeDetailActivity::class.java)
-                        "Smart Light" -> Intent(context, LightDetailActivity::class.java)
-                        "Smart Plug" -> Intent(context, PlugDetailActivity::class.java)
-                        else -> null
+                    val intent = Intent(context, DeviceDetailsActivity::class.java).apply {
+                        putExtra("DEVICE_DETAILS", device)
                     }
-                    intent?.apply {
-                        putExtra("DEVICE_ID", device.deviceId)
-                        context.startActivity(this)
-                    }
-                    //detailClickListener?.let { it1 -> it1(device) }
+                    context.startActivity(intent)
                 }
 
             }
