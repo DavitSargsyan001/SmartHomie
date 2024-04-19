@@ -54,18 +54,20 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
         val homeButton: ImageButton = findViewById(R.id.ibHome2)
         saveButton.isEnabled = false
 
-        adapter = DeviceAdapter(
-            devices = devices,
-            contextType = AdapterContext.DEVICE_DISCOVERY,
-            actionListener = null,
-            clickListener = { device ->
-                // Handle selection logic here
-                val selectedCount = devices.count { it.isSelected }
-                saveButton.isEnabled = selectedCount > 0
-                adapter.notifyItemChanged(devices.indexOf(device))
-            },
-            detailClickListener = null  // Now you can pass null explicitly
-        )
+        adapter = DeviceAdapter(devices, AdapterContext.DEVICE_DISCOVERY) { device ->
+            // Here we handle the selection change.
+            // Toggle the selected state.
+            //-device.isSelected = !device.isSelected
+            // If you have a save or add button, you could enable/disable it here based on the number of selected items.
+            val selectedCount = devices.count { it.isSelected }
+            Log.d("DeviceDiscoveryActivity", "coutn of selected devices:  $selectedCount")
+            // Enable the button if at least one device is selected.
+            saveButton.isEnabled = selectedCount > 0
+            // You might need to refresh the RecyclerView to update the visual state.
+            Log.d("DeviceDiscoveryActivity", "Index of device:  ${devices.indexOf(device)}")
+            adapter.notifyItemChanged(devices.indexOf(device))
+            //adapter.notifyDataSetChanged(AdapterContext.DEVICE_DISCOVERY)//AdapterContext.DEVICE_DISCOVERY
+        }
 
 
         val recyclerView: RecyclerView = findViewById(R.id.devicesRecyclerView)

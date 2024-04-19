@@ -24,48 +24,44 @@ android:padding="16dp">
             android:id="@+id/deviceIcon"
             android:layout_width="42dp"
             android:layout_height="46dp"
-            android:layout_marginStart="28dp"
             android:src="@drawable/ic_hue_bridge"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.666" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/deviceName"
             android:layout_width="208dp"
             android:layout_height="22dp"
-            android:layout_marginTop="4dp"
             android:text="Device Name"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/deviceIcon"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/deviceStatus"
-            android:layout_width="184dp"
-            android:layout_height="17dp"
-            android:layout_marginTop="0dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:text="Status"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@id/deviceIcon"
             app:layout_constraintTop_toBottomOf="@id/deviceName" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ToggleButton
         android:id="@+id/quickActionButton"
-        android:layout_width="85dp"
-        android:layout_height="44dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
         android:textOff="OFF"
         android:textOn="ON"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
