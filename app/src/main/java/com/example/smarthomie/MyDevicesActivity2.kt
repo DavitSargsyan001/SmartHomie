@@ -2,6 +2,7 @@ package com.example.smarthomie
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -22,9 +23,9 @@ class MyDevicesActivity2 : AppCompatActivity(), DeviceActionListener  {
         binding = MyDevices2Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val homeButton: ImageButton = findViewById(R.id.ibHome2)
+        val cancelButton: Button = findViewById(R.id.button10)
 
-        homeButton.setOnClickListener{
+        cancelButton.setOnClickListener{
             val intent = Intent(this, MyGroup::class.java)
             startActivity(intent)
         }

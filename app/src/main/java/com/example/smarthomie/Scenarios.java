@@ -131,7 +131,7 @@ public class Scenarios extends AppCompatActivity {
                 if (plugURL != null) {
                     turnOffDevice(plugURL);
                 }
-                nestAPI.turnOffNestDevice();
+                nestAPI.setHvacMode("OFF");
             }
         });
         //Eco Scenario

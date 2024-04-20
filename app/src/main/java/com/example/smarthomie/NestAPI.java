@@ -129,27 +129,54 @@ public class NestAPI {
     }
 
 
-    private static void setHvacMode(String mode) {
-        try {
-            String url = "https://smartdevicemanagement.googleapis.com/v1/enterprises/" + projectId + "/devices/" + deviceId + ":executeCommand";
-            URL urlo = new URL(url);
-            HttpURLConnection connection = (HttpURLConnection) urlo.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + accessToken);
+    public static void setHvacMode(String mode) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String url = "https://smartdevicemanagement.googleapis.com/v1/enterprises/" + projectId + "/devices/" + deviceId + ":executeCommand";
+                    URL urlo = new URL(url);
+                    HttpURLConnection connection = (HttpURLConnection) urlo.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setDoOutput(true);
+                    connection.setRequestProperty("Content-Type", "application/json");
+                    connection.setRequestProperty("Authorization", "Bearer " + accessToken);
 
-            String data = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"" + mode + "\"}}";
+                    String data = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"" + mode + "\"}}";
 
-            try (OutputStream outputStream = connection.getOutputStream()) {
-                byte[] input = data.getBytes("utf-8");
-                outputStream.write(input, 0, input.length);
+                    try (OutputStream outputStream = connection.getOutputStream()) {
+                        byte[] input = data.getBytes("utf-8");
+                        outputStream.write(input, 0, input.length);
+                    }
+
+                    System.out.println("execute_response: " + connection.getResponseCode());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-
-            System.out.println("execute_response: " + connection.getResponseCode());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+//        try {
+//            String url = "https://smartdevicemanagement.googleapis.com/v1/enterprises/" + projectId + "/devices/" + deviceId + ":executeCommand";
+//            URL urlo = new URL(url);
+//            HttpURLConnection connection = (HttpURLConnection) urlo.openConnection();
+//            connection.setRequestMethod("POST");
+//            connection.setDoOutput(true);
+//            connection.setRequestProperty("Content-Type", "application/json");
+//            connection.setRequestProperty("Authorization", "Bearer " + accessToken);
+//
+//            String data = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"" + mode + "\"}}";
+//
+//            try (OutputStream outputStream = connection.getOutputStream()) {
+//                byte[] input = data.getBytes("utf-8");
+//                outputStream.write(input, 0, input.length);
+//            }
+//
+//            System.out.println("execute_response: " + connection.getResponseCode());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private static void temperatureSetHeat(double setpoint) {
