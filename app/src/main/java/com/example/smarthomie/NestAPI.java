@@ -1,5 +1,7 @@
 package com.example.smarthomie;
 
+import android.util.Log;
+
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -8,6 +10,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.*;
 
 public class NestAPI {
     private static String oauth2ClientId = "418693695368-54td1or6bqlqiarsd17po53005ejku4h.apps.googleusercontent.com";
@@ -19,21 +24,8 @@ public class NestAPI {
     private static String deviceId = "AVPHwEsGqDW61332djQHyxAmoqAlJZopE7z2e4UaQtrZc71Bv3WtsY-ICKGDoMptaOfxGVPIbQe3oJxNN5dujhWm6gNIvQ";
 
     private String lastMode = ""; //Keep track of the last Mode it was on before turning off
-
-    public static void main(String[] args) {
-
-        refreshToken();
-        // Example actions
-
-
-        // Uncomment the following line if you want to pause and check whether the temperature setpoint changed.
-        // System.in.read();
-
-        temperatureSetCool(81);
-
-
-    }
-
+    private final static Logger LOGGER =
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     private static void requestTokens() {
         try {
             // Load tokens from file if available
@@ -97,43 +89,51 @@ public class NestAPI {
         }
     }
 
-    private static void refreshToken() {
-        try {
-            String refreshUrl = "https://www.googleapis.com/oauth2/v4/token?";
-            String params = "client_id=" + oauth2ClientId +
-                    "&client_secret=" + clientSecret +
-                    "&refresh_token=" + refreshToken +
-                    "&grant_type=refresh_token";
-
-            HttpURLConnection refreshConnection = (HttpURLConnection) new URL(refreshUrl).openConnection();
-            refreshConnection.setRequestMethod("POST");
-            refreshConnection.setDoOutput(true);
-
-            try (OutputStream outputStream = refreshConnection.getOutputStream()) {
-                outputStream.write((params).getBytes(StandardCharsets.UTF_8));
-            }
-
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(refreshConnection.getInputStream()))) {
-                String line;
-                StringBuilder response = new StringBuilder();
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-
-                // Parse JSON response to get new access token
-                accessToken = response.toString().split("\"access_token\":\"")[0].split("\"")[3];
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public static void setHvacMode(String mode) {
+    public static void refreshToken() {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 try {
+                    String refreshUrl = "https://www.googleapis.com/oauth2/v4/token?";
+                    String params = "client_id=" + oauth2ClientId +
+                            "&client_secret=" + clientSecret +
+                            "&refresh_token=" + refreshToken +
+                            "&grant_type=refresh_token";
+
+                    HttpURLConnection refreshConnection = (HttpURLConnection) new URL(refreshUrl).openConnection();
+                    refreshConnection.setRequestMethod("POST");
+                    refreshConnection.setDoOutput(true);
+
+                    try (OutputStream outputStream = refreshConnection.getOutputStream()) {
+                        outputStream.write((params).getBytes(StandardCharsets.UTF_8));
+                    }
+
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(refreshConnection.getInputStream()))) {
+                        String line;
+                        StringBuilder response = new StringBuilder();
+                        while ((line = reader.readLine()) != null) {
+                            response.append(line);
+                        }
+
+                        // Parse JSON response to get new access token
+                        accessToken = response.toString().split("\"access_token\":\"")[0].split("\"")[3];
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+
+    public static void setHvacMode(String mode) {
+         Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    refreshToken();
                     String url = "https://smartdevicemanagement.googleapis.com/v1/enterprises/" + projectId + "/devices/" + deviceId + ":executeCommand";
                     URL urlo = new URL(url);
                     HttpURLConnection connection = (HttpURLConnection) urlo.openConnection();
@@ -141,14 +141,11 @@ public class NestAPI {
                     connection.setDoOutput(true);
                     connection.setRequestProperty("Content-Type", "application/json");
                     connection.setRequestProperty("Authorization", "Bearer " + accessToken);
-
                     String data = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"" + mode + "\"}}";
-
                     try (OutputStream outputStream = connection.getOutputStream()) {
                         byte[] input = data.getBytes("utf-8");
                         outputStream.write(input, 0, input.length);
                     }
-
                     System.out.println("execute_response: " + connection.getResponseCode());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -157,26 +154,6 @@ public class NestAPI {
         };
         Thread thread = new Thread(runnable);
         thread.start();
-//        try {
-//            String url = "https://smartdevicemanagement.googleapis.com/v1/enterprises/" + projectId + "/devices/" + deviceId + ":executeCommand";
-//            URL urlo = new URL(url);
-//            HttpURLConnection connection = (HttpURLConnection) urlo.openConnection();
-//            connection.setRequestMethod("POST");
-//            connection.setDoOutput(true);
-//            connection.setRequestProperty("Content-Type", "application/json");
-//            connection.setRequestProperty("Authorization", "Bearer " + accessToken);
-//
-//            String data = "{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"" + mode + "\"}}";
-//
-//            try (OutputStream outputStream = connection.getOutputStream()) {
-//                byte[] input = data.getBytes("utf-8");
-//                outputStream.write(input, 0, input.length);
-//            }
-//
-//            System.out.println("execute_response: " + connection.getResponseCode());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     private static void temperatureSetHeat(double setpoint) {
