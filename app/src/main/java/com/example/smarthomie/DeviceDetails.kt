@@ -4,6 +4,8 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.firebase.firestore.PropertyName
+//import android.os.Parcelable
+//import kotlinx.parcelize.Parcelize
 
 enum class DeviceType {
     HUE_BRIDGE , THERMOSTAT, LIGHTBULB, SMART_PLUG
@@ -29,7 +31,7 @@ data class DeviceDetails(
     @get:PropertyName("documentID") @set:PropertyName("documentID") var documentID: String? = null,
     //@get:PropertyName("numericID") @set:PropertyName("numericID") var numericID: String? = null,
 
-)
+) //: Parcable
 /*
 @Entity
 data class DeviceDetails(
