@@ -1,44 +1,98 @@
 package com.example.smarthomie
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.SeekBar
+import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.smarthomie.DeviceControlService
 
 class DeviceDetailsActivity : AppCompatActivity() {
-
+    private lateinit var deviceControlService: DeviceControlService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_device_detail)
 
-        // Retrieve device details passed from MyDevicesActivity
-        val deviceName = intent.getStringExtra("DEVICE_NAME")
-        val deviceStatus = intent.getStringExtra("DEVICE_STATUS")
-        val deviceType = intent.getStringExtra("DEVICE_TYPE")
-        val deviceId = intent.getStringExtra("DEVICE_ID")
-        // ... You can pass more details as needed
+        val device = intent.getParcelableExtra<DeviceDetails>("DEVICE_DETAILS")
+        deviceControlService = DeviceControlService()
 
-        // Set the device details to TextViews
-        findViewById<TextView>(R.id.tvDeviceName).text = deviceName
-        findViewById<TextView>(R.id.tvDeviceStatus).text = "Status: $deviceStatus"
-        findViewById<TextView>(R.id.tvDeviceType).text = "Type: $deviceType"
+        val layoutRes = when (device?.type) {
+            "HueBridge" -> R.layout.activity_bridge_detail
+            "Smart Light" -> R.layout.activity_light_detail
+            "Smart Plug" -> R.layout.activity_plug_detail
+            else -> R.layout.activity_device_detail  // A default or error layout
+        }
 
-        // Set up the SeekBar listener to control brightness
-        val seekBarBrightness = findViewById<SeekBar>(R.id.seekBarBrightness)
-        seekBarBrightness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                // Handle brightness control here
-                controlDeviceBrightness(deviceId, progress)
-            }
+        setContentView(layoutRes)
 
-            override fun onStartTrackingTouch(seekBar: SeekBar) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar) {}
-        })
+        if (device != null) {
+            setupUI(device)
+        }
     }
 
-    private fun controlDeviceBrightness(deviceId: String?, brightness: Int) {
-        // Send brightness change to your device control service
-        // You might want to scale the brightness value as per your device's requirements
+    private fun setupUI(device: DeviceDetails) {
+        findViewById<TextView>(R.id.tvDeviceName).text = device.name
+        findViewById<TextView>(R.id.tvDeviceStatus).text = device.status
+        findViewById<TextView>(R.id.tvDeviceType).text = device.type
+        findViewById<TextView>(R.id.tvDeviceIDnumeric).text = device.deviceId
+        findViewById<TextView>(R.id.tvDeviceIP).text = device.ip
+        findViewById<TextView>(R.id.tvDeviceUniqueID).text = device.id
+
+        findViewById<ImageButton>(R.id.ibHome3).setOnClickListener {
+            startActivity(Intent(this, homePage::class.java))
+        }
+
+
+
+        if (device.type == "Smart Light") {
+            val brightnessControl = findViewById<SeekBar>(R.id.seekBar)
+            brightnessControl.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    deviceControlService.setBrightness(device.deviceId!!, progress, device.ip!!, device.hueBridgeUsername!!) { success ->
+                        runOnUiThread {
+                            if (success) {
+                                Toast.makeText(this@DeviceDetailsActivity, "Brightness adjusted", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(this@DeviceDetailsActivity, "Failed to adjust brightness", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+
+
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    // Optional: Implement if needed
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    // Optional: Implement if needed
+                }
+            })
+
+            val switchOnOff = findViewById<Switch>(R.id.switchControlDevice)
+
+            switchOnOff.isChecked = device.status == "On"
+
+            switchOnOff.setOnCheckedChangeListener {_, isChecked ->
+                val newStatus = if (isChecked) "On" else "Off"
+                deviceControlService.toggleDeviceOnOff(device.deviceId!!, isChecked, device.ip!!, device.hueBridgeUsername!!) {success ->
+                    runOnUiThread {
+                        if (success) {
+                            Toast.makeText(this, "Device turned $newStatus", Toast.LENGTH_SHORT).show()
+                            device.status = newStatus
+                        } else {
+                            Toast.makeText(this, "Failed to turn $newStatus", Toast.LENGTH_SHORT).show()
+                            switchOnOff.isChecked = !isChecked
+                        }
+                    }
+                }
+            }
+        }
     }
 }
