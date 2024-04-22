@@ -97,34 +97,25 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
     }
 
     private fun setupRecyclerView() {
-
-        val clickListener: (DeviceDetails) -> Unit = {device ->
-            Toast.makeText(this, "Clicked on device: ${device.name}", Toast.LENGTH_SHORT).show()
+        // Listener for handling clicks on devices to open details
+        val clickListener: (DeviceDetails) -> Unit = { device ->
+            val intent = Intent(this@MyDevicesActivity, DeviceDetailsActivity::class.java).apply {
+                putExtra("DEVICE_DETAILS", device)
+            }
+            startActivity(intent)
         }
 
+        // Initialize the adapter with the click listener
         adapter = DeviceAdapter(
             mutableListOf(),
             AdapterContext.MY_DEVICES,
             this,
-            { device ->
-                Toast.makeText(this, "Quick action on: ${device.name}", Toast.LENGTH_SHORT).show()
-            },
-            {device ->
-                val context = this@MyDevicesActivity
-                val intent = when (device.type) {
-                    "Hue Bridge" -> Intent(context, BridgeDetailActivity::class.java)
-                    "Smart Light" -> Intent(context, LightDetailActivity::class.java)
-                    "Smart Plug" -> Intent(context, PlugDetailActivity::class.java)
-                    else -> return@DeviceAdapter
-                }
-                intent.putExtra("DEVICE_ID", device.deviceId)
-                context.startActivity(intent)
-
-            }
-            )
+            clickListener
+        )
         binding.devicesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.devicesRecyclerView.adapter = adapter
     }
+
 
     private fun observeDevices(){
         viewModel.devicesLiveData.observe(this, Observer{ devices ->

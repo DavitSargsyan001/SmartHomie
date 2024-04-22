@@ -47,9 +47,6 @@
         <activity android:name=".DeviceDiscoveryActivity"></activity>
         <activity android:name=".ChangeEmailActivity"></activity>
         <activity android:name=".DeviceDetailsActivity"></activity>
-        <activity android:name=".BridgeDetailActivity" />
-        <activity android:name=".LightDetailActivity" />
-        <activity android:name=".PlugDetailActivity" />
 
     </application>
 
