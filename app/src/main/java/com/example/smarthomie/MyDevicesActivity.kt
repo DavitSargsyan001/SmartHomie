@@ -108,7 +108,7 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
             this,
             { device ->
                 Toast.makeText(this, "Quick action on: ${device.name}", Toast.LENGTH_SHORT).show()
-            }/*,
+            },
             {device ->
                 val context = this@MyDevicesActivity
                 val intent = when (device.type) {
@@ -120,7 +120,7 @@ class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
                 intent.putExtra("DEVICE_ID", device.deviceId)
                 context.startActivity(intent)
 
-            }*/
+            }
             )
         binding.devicesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.devicesRecyclerView.adapter = adapter

@@ -5,8 +5,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.gms.google-services")
-    id ("kotlin-android")
-    id ("kotlin-parcelize")
 }
 
 android {

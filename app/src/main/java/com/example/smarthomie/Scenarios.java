@@ -1,5 +1,7 @@
 package com.example.smarthomie;
 
+
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
@@ -49,6 +51,9 @@ public class Scenarios extends AppCompatActivity {
     private String plugURL;
 
     int ecoBrightness = 50;
+
+    NestAPI nestAPI = new NestAPI();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +116,7 @@ public class Scenarios extends AppCompatActivity {
                 if (plugURL != null) {
                     turnOnDevice(plugURL);
                 }
+                nestAPI.turnOnNestDevice();
             }
         });
 
@@ -125,6 +131,7 @@ public class Scenarios extends AppCompatActivity {
                 if (plugURL != null) {
                     turnOffDevice(plugURL);
                 }
+                nestAPI.setHvacMode("OFF");
             }
         });
         //Eco Scenario
@@ -136,6 +143,19 @@ public class Scenarios extends AppCompatActivity {
                     ecoMode(lightURl);
                 }
                 if (plugURL != null) {
+                    turnOffDevice(plugURL);
+                }
+            }
+        });
+        //Sleep Scenario
+        Button sleepButton = findViewById(R.id.btnSleepScenario);
+        sleepButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(lightURl != null){
+                    decreaseBrightness(lightURl,30);
+                }
+                if(plugURL != null){
                     turnOffDevice(plugURL);
                 }
             }
@@ -180,6 +200,28 @@ public class Scenarios extends AppCompatActivity {
                 Toast.makeText(Scenarios.this, "Error retrieving device info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    //Gradually decrease brightness for Sleep Scenario
+    private void decreaseBrightness(final String url, final int durationInSeconds){
+        configureSSL();
+        final int numSteps = durationInSeconds;
+        final int initialBrightness = 254;//Maximum
+        final int finalBrightness = 1; //Minimum
+        final int brightnessIncrement = (initialBrightness - finalBrightness) / numSteps;
+
+        //Request delay in separate thread
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < numSteps; i++){
+                    final int brightness = initialBrightness - i * brightnessIncrement;
+
+                    //Sending delayed request
+                    String requestBody = "{\"on\": true, \"bri\": " + brightness + "}";
+                    sendRequestWithDelay(url, requestBody, i * 1000); // Delay request by i seconds
+                }
+            }
+        }).start();
     }
 
     // Gradually Increase brightness For wake up Scenario
@@ -278,7 +320,6 @@ public class Scenarios extends AppCompatActivity {
         String requestBody = "{\"on\": true}";
         sendRequest(url,requestBody);
     }
-
     // SSL handshake error fix
     private void configureSSL() {
         TrustManager[] trustAllCerts = new TrustManager[]{

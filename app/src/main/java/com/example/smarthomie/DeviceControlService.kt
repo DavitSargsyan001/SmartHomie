@@ -40,33 +40,4 @@ class DeviceControlService {
             }
         })
     }
-
-    fun setBrightness(deviceId: String, brightness: Int, hueBridgeIp: String, hueUsername: String, callback: (Boolean) -> Unit) {
-        val url = "http://$hueBridgeIp/api/$hueUsername/lights/$deviceId/state"
-        val requestBody = JSONObject().apply {
-            put("bri", brightness)  // "bri" is the Hue API key for brightness and expects a value from 0 to 254.
-        }.toString().toRequestBody("application/json".toMediaTypeOrNull())
-
-        val request = Request.Builder()
-            .url(url)
-            .put(requestBody)
-            .build()
-
-        OkHttpClient().newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("DeviceControlService", "Failed to set brightness", e)
-                callback(false)
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    Log.d("DeviceControlService", "Brightness set successfully")
-                    callback(true)
-                } else {
-                    Log.e("DeviceControlService", "Failed to set brightness")
-                    callback(false)
-                }
-            }
-        })
-    }
 }
