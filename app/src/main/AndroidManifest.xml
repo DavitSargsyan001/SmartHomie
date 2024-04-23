@@ -47,7 +47,8 @@
         <activity android:name=".DeviceDiscoveryActivity"></activity>
         <activity android:name=".ChangeEmailActivity"></activity>
         <activity android:name=".DeviceDetailsActivity"></activity>
-
+        <activity android:name=".MyGroup"></activity>
+        <activity android:name=".MyDevicesActivity2"></activity>
     </application>
 
 </manifest>
