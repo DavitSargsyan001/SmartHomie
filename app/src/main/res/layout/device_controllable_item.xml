@@ -24,12 +24,12 @@ android:padding="16dp">
             android:id="@+id/deviceIcon"
             android:layout_width="42dp"
             android:layout_height="46dp"
-            android:layout_marginStart="28dp"
+            android:layout_marginStart="16dp"
             android:src="@drawable/ic_hue_bridge"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.666" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/deviceName"

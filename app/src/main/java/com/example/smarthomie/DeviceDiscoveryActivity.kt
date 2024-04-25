@@ -189,12 +189,19 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                                 val isOn = state.getBoolean("on")
                                 val name = lightObject.getString("name")
                                 val uniqueId = lightObject.getString("uniqueid")
+                                val deviceType = lightObject.getString("type")
+                                val typeToAssign = "Smart Device"
+                                if (deviceType == "On/Off plug-in unit"){
+                                    val typeToAssign = "Smart Plug"
+                                } else if (deviceType == "Dimmable light") {
+                                    val typeToAssign = "Smart Light"
+                                }
 
                                 val deviceDetails = DeviceDetails(
                                     deviceId = key,
                                     name = name,
                                     status = if (isOn) "On" else "Off",
-                                    type = if (name == "Hue smart plug") "Smart Plug" else "Smart Light",
+                                    type = typeToAssign,
                                     ip = hueIP ?: "",
                                     hueBridgeUsername = hueUsername ?: "",
                                     ownerUserID = ownerUsername ?: "",

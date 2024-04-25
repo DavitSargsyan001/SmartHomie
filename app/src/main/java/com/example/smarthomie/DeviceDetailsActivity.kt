@@ -42,9 +42,8 @@ class DeviceDetailsActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.tvDeviceName).text = device.name
         findViewById<TextView>(R.id.tvDeviceStatus).text = device.status
         findViewById<TextView>(R.id.tvDeviceType).text = device.type
-        findViewById<TextView>(R.id.tvDeviceIDnumeric).text = device.deviceId
         findViewById<TextView>(R.id.tvDeviceIP).text = device.ip
-        findViewById<TextView>(R.id.tvDeviceUniqueID).text = device.id
+
 
         findViewById<ImageButton>(R.id.ibHome3).setOnClickListener {
             startActivity(Intent(this, homePage::class.java))
@@ -52,29 +51,34 @@ class DeviceDetailsActivity : AppCompatActivity() {
 
 
 
-        if (device.type == "Smart Light") {
-            val brightnessControl = findViewById<SeekBar>(R.id.seekBar)
-            brightnessControl.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    deviceControlService.setBrightness(device.deviceId!!, progress, device.ip!!, device.hueBridgeUsername!!) { success ->
-                        runOnUiThread {
-                            if (success) {
-                                Toast.makeText(this@DeviceDetailsActivity, "Brightness adjusted", Toast.LENGTH_SHORT).show()
-                            } else {
-                                Toast.makeText(this@DeviceDetailsActivity, "Failed to adjust brightness", Toast.LENGTH_SHORT).show()
+        if (device.type == "Smart Light" && device.type == "Smart Plug") {
+
+            if (device.type == "Smart Light"){
+                val brightnessControl = findViewById<SeekBar>(R.id.seekBar)
+                brightnessControl.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                        deviceControlService.setBrightness(device.deviceId!!, progress, device.ip!!, device.hueBridgeUsername!!) { success ->
+                            runOnUiThread {
+                                if (success) {
+                                    Toast.makeText(this@DeviceDetailsActivity, "Brightness adjusted", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(this@DeviceDetailsActivity, "Failed to adjust brightness", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                     }
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                    // Optional: Implement if needed
-                }
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                        // Optional: Implement if needed
+                    }
 
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    // Optional: Implement if needed
-                }
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                        // Optional: Implement if needed
+                    }
 
-            })
+                })
+
+            }
+
 
             val switchOnOff = findViewById<Switch>(R.id.switchControlDevice)
 

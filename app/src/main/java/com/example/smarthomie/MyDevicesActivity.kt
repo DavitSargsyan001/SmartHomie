@@ -1,11 +1,8 @@
 package com.example.smarthomie
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -17,11 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import com.example.smarthomie.databinding.MyDevicesBinding
-import com.example.smarthomie.DeviceDetailsActivity
-import com.example.smarthomie.DeviceViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.example.smarthomie.DeviceControlService
+
 
 
 class MyDevicesActivity : AppCompatActivity(), DeviceActionListener {
