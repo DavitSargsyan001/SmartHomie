@@ -211,9 +211,6 @@ public class NestAPI {
     }
     //method to turn on Nest to last mode
     public void turnOnNestDevice(){
-        if(!lastMode.isEmpty()){
-            setHvacMode(lastMode);
-        }else{
             setHvacMode("HEAT");//Default Mode
         }
     }
