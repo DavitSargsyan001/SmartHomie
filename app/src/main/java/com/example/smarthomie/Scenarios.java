@@ -2,7 +2,7 @@ package com.example.smarthomie;
 
 
 
-import android.content.Intent;
+import  android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -40,18 +40,15 @@ import javax.net.ssl.X509TrustManager;
 
 public class Scenarios extends AppCompatActivity {
     ImageButton myImageButton;
-    private String bridgeIpAddress;
-    private String username;
-    int lightID = 1;
-    int plugID = 3;
-    String email, userId;
+
+    private String numericID;
+
+    String userId;
     FirebaseAuth auth;
     FirebaseFirestore db;
-    private String lightURl;
-    private String plugURL;
-
     int ecoBrightness = 50;
-
+    private List<String> lightURls = new ArrayList<>();
+    private  List<String> plugURLs = new ArrayList<>();
     NestAPI nestAPI = new NestAPI();
 
 
@@ -72,30 +69,79 @@ public class Scenarios extends AppCompatActivity {
         userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                List<?> listOfDevices = (List<?>) documentSnapshot.get("listOfDevices");
-                if (listOfDevices != null && !listOfDevices.isEmpty()) {
-                    List<String> deviceNames = new ArrayList<>();
-                    for (Object device : listOfDevices) {
-                        if (device instanceof String) {
-                            deviceNames.add((String) device);
-                        } else {
-                            // Handle unexpected types if necessary
-                            Toast.makeText(Scenarios.this, "No devices found", Toast.LENGTH_SHORT).show();
-                        }
+                List<String> deviceIds = (List<String>) documentSnapshot.get("listOfDevices");
+                if (deviceIds != null && !deviceIds.isEmpty()) {
+                    // Retrieve device info for each device
+                    for (String deviceId : deviceIds) {
+                        DocumentReference deviceRef = db.collection("Devices").document(deviceId);
+                        deviceRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot deviceSnapshot) {
+                                if (deviceSnapshot.exists()) {
+                                    // Get device ID for each device from user
+                                    numericID = deviceSnapshot.getString("numericID");
+                                    if (numericID != null) {
+                                        // Create URLS based on the  type of devices
+                                        String IP = deviceSnapshot.getString("IP");
+                                        String hueBridgeUsername = deviceSnapshot.getString("hueBridgeUsername: ");
+                                        String deviceType = deviceSnapshot.getString("Type: ");
+                                        String deviceName = deviceSnapshot.getString("Name: ");
+
+                                        if (deviceType != null) {
+                                            // Based on device type separate URL will be made
+                                            switch(deviceType){
+                                                //If its light bulb
+                                                case "Smart Light":
+                                                    lightURls.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
+                                                    break;
+                                                 //If its a smart plug
+                                                case "Smart Plug":
+                                                    plugURLs.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
+                                                    break;
+                                                case "Smart Device": 
+                                                    if(deviceName.contains("plug")){
+                                                        plugURLs.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
+                                                    } else if (deviceName.contains("light") || deviceName.contains("lamp") ) {
+                                                        lightURls.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
+                                                    }
+                                                    break;
+
+                                                default:
+                                                    break;
+                                            }
+                                        }
+                                    } else {
+                                        // Handle case where numeric ID is not available
+                                        Log.e("Error", "Numeric ID not found for device: " + deviceId);
+                                    }
+                                } else {
+                                    // Handle case where device document does not exist
+                                    Log.e("Error", "Device document not found for ID: " + deviceId);
+                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Handle failure to retrieve device document
+                                Log.e("Error", "Error retrieving device document: " + e.getMessage());
+                            }
+                        });
                     }
-                    // Retrieve IP and hueBridgeUsername from Firestore for the first device
-                    String firstDeviceName = deviceNames.get(0);
-                    retrieveDeviceInfo(firstDeviceName);
+                } else {
+                    // Handle case where no devices are associated with the user
+                    Log.d("Info", "No devices found");
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(Scenarios.this, "Error retrieving devices: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                // Handle failure to retrieve user document
+                Log.e("Error", "Error retrieving devices: " + e.getMessage());
             }
         });
 
-        //Go back to home page
+
+    //Go back to home page
         myImageButton = findViewById(R.id.ibHome);
         myImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,14 +156,16 @@ public class Scenarios extends AppCompatActivity {
         homeScenarioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (lightURl != null) {
-                    turnOnDevice(lightURl);
+                //Go through each Light in list to turn on
+                for(String lightURL : lightURls){
+                    turnOnDevice(lightURL);
                 }
-                if (plugURL != null) {
+                //Go trough each plug to turn on
+                for( String plugURL : plugURLs){
                     turnOnDevice(plugURL);
                 }
                 nestAPI.turnOnNestDevice();
-            }
+                }
         });
 
         //Away Scenario
@@ -125,11 +173,13 @@ public class Scenarios extends AppCompatActivity {
         awayScenarioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (lightURl != null) {
-                    turnOffDevice(lightURl);
+                //iterate through lights to turn off
+                for(String lightURL : lightURls){
+                    turnOffDevice(lightURL);
                 }
-                if (plugURL != null) {
-                    turnOffDevice(plugURL);
+                //iterate through plugs to turn off
+                for(String plugURl : plugURLs){
+                    turnOffDevice(plugURl);
                 }
                 nestAPI.setHvacMode("OFF");
             }
@@ -139,11 +189,13 @@ public class Scenarios extends AppCompatActivity {
         ecoScenarioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (lightURl != null) {
-                    ecoMode(lightURl);
+                //iterate through lights to set to eco mode
+                for(String lightURL : lightURls){
+                    ecoMode(lightURL);
                 }
-                if (plugURL != null) {
-                    turnOffDevice(plugURL);
+                //iterate through plugs to set to eco mode
+                for(String plugURl : plugURLs){
+                    ecoMode(plugURl);
                 }
             }
         });
@@ -152,11 +204,13 @@ public class Scenarios extends AppCompatActivity {
         sleepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(lightURl != null){
-                    decreaseBrightness(lightURl,30);
+                //iterate through lights to gradually turn off
+                for(String lightURL : lightURls){
+                    decreaseBrightness(lightURL,30);
                 }
-                if(plugURL != null){
-                    turnOffDevice(plugURL);
+                //iterate through plugs to turn off
+                for(String plugURl : plugURLs){
+                    turnOffDevice(plugURl);
                 }
             }
         });
@@ -165,48 +219,22 @@ public class Scenarios extends AppCompatActivity {
         wakeUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (lightURl != null) {
+                for (String lightURl : lightURls){
                     increaseBrightness(lightURl,30);
                 }
-                if (plugURL != null) {
+                for (String plugURL : plugURLs){
                     turnOnDevice(plugURL);
                 }
             }
         });
     }
 
-    // Get IP and Username from database
-    private void retrieveDeviceInfo(String deviceName) {
-        DocumentReference deviceRef = db.collection("Devices").document(deviceName);
-        deviceRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    bridgeIpAddress = documentSnapshot.getString("IP");
-                    username = documentSnapshot.getString("hueBridgeUsername: ");
-                    // LOGGING PURPOSES REMEMBER TO DELETE
-                    String message = "IP: " + bridgeIpAddress + "\nHue Bridge Username: " + username;
-                    Toast.makeText(Scenarios.this, message, Toast.LENGTH_SHORT).show();
-                    //creating the urls to send request
-                    lightURl = "https://" + bridgeIpAddress + "/api/" + username + "/lights/" + lightID + "/state";
-                    plugURL = "https://" + bridgeIpAddress + "/api/" + username + "/lights/" + plugID + "/state";
-                } else {
-                    Toast.makeText(Scenarios.this, "Device document does not exist", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(Scenarios.this, "Error retrieving device info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
     //Gradually decrease brightness for Sleep Scenario
     private void decreaseBrightness(final String url, final int durationInSeconds){
         configureSSL();
         final int numSteps = durationInSeconds;
         final int initialBrightness = 254;//Maximum
-        final int finalBrightness = 1; //Minimum
+        final int finalBrightness = 0; //Minimum
         final int brightnessIncrement = (initialBrightness - finalBrightness) / numSteps;
 
         //Request delay in separate thread
@@ -220,6 +248,8 @@ public class Scenarios extends AppCompatActivity {
                     String requestBody = "{\"on\": true, \"bri\": " + brightness + "}";
                     sendRequestWithDelay(url, requestBody, i * 1000); // Delay request by i seconds
                 }
+                String offRequest = "{\"on\": false}";
+                sendRequestWithDelay(url, offRequest, numSteps * 1000); // Delay turning off the light
             }
         }).start();
     }
@@ -240,7 +270,7 @@ public class Scenarios extends AppCompatActivity {
                 for (int i = 0; i < numSteps; i++) {
                     final int brightness = initialBrightness + i * brightnessIncrement;
 
-                    //Sending request with delay
+                    //Delay request in order to gradually increase brightness
                     String requestBody = "{\"on\": true, \"bri\": " + brightness + "}";
                     sendRequestWithDelay(url, requestBody, i * 1000); // Delay request by i seconds
                 }
@@ -248,7 +278,7 @@ public class Scenarios extends AppCompatActivity {
         }).start();
     }
 
-    // Method to send HTTP request with delay
+    // Send HTTP request with delay
     private void sendRequestWithDelay(final String url, final String requestBody, final int delayInMillis) {
         runOnUiThread(new Runnable() {
             @Override
@@ -305,10 +335,9 @@ public class Scenarios extends AppCompatActivity {
             String requestBody = "{\"on\": true, \"bri\": " + ecoBrightness + "}";
             sendRequest(url, requestBody);
         }
-        //Method to turn off devices
+     //Method To tunr off device
     private void turnOffDevice(String url) {
         configureSSL();
-        // Sending request to turn off light
         String requestBody = "{\"on\": false}";
         sendRequest(url,requestBody);
     }
@@ -316,7 +345,6 @@ public class Scenarios extends AppCompatActivity {
     // Method to turn on devices
     private void turnOnDevice(String url) {
         configureSSL();
-        // Sending request to turn on light
         String requestBody = "{\"on\": true}";
         sendRequest(url,requestBody);
     }
