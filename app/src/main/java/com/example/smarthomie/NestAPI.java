@@ -23,7 +23,7 @@ public class NestAPI {
     private static String refreshToken = "1//06_SnvSzckj_ZCgYIARAAGAYSNwF-L9Irx3txViEDkM5ni4EtfrPA307g0L4wm1gzXDgT-CQ_Q58WfEE3ZuI710QmYmUtu84vS7U";
     private static String deviceId = "AVPHwEsGqDW61332djQHyxAmoqAlJZopE7z2e4UaQtrZc71Bv3WtsY-ICKGDoMptaOfxGVPIbQe3oJxNN5dujhWm6gNIvQ";
 
-    private String lastMode = ""; //Keep track of the last Mode it was on before turning off
+    private static String lastMode = ""; //Keep track of the last Mode it was on before turning off
     private final static Logger LOGGER =
             Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     private static void requestTokens() {
@@ -129,6 +129,8 @@ public class NestAPI {
 
 
     public static void setHvacMode(String mode) {
+        //Hold last mode that the nest was in
+            lastMode = mode;
          Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -145,6 +147,12 @@ public class NestAPI {
                     try (OutputStream outputStream = connection.getOutputStream()) {
                         byte[] input = data.getBytes("utf-8");
                         outputStream.write(input, 0, input.length);
+                    }
+                    int responseCode = connection.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        System.out.println("Request sent successfully");
+                    } else {
+                        System.out.println("Error sending request. Response code: " + responseCode);
                     }
                     System.out.println("execute_response: " + connection.getResponseCode());
                 } catch (IOException e) {
@@ -199,41 +207,15 @@ public class NestAPI {
             e.printStackTrace();
         }
     }
-    // Method to turn off the device
-    public void turnOffNestDevice() {
-        sendDeviceCommand("OFF");
-    }
     //method to turn on Nest to last mode
     public void turnOnNestDevice(){
         if(!lastMode.isEmpty()){
             setHvacMode(lastMode);
         }else{
-            setHvacMode("heat");//Default Mode
+            setHvacMode("HEAT");//Default Mode
         }
     }
 
-    // Private method to send a device command
-    private static void sendDeviceCommand(String command) {
-        try {
-            String url = "https://smartdevicemanagement.googleapis.com/v1/enterprises/" + projectId + "/devices/" + deviceId + ":executeCommand";
-            URL urlo = new URL(url);
-            HttpURLConnection connection = (HttpURLConnection) urlo.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + accessToken);
 
-            String data = "{\"command\":\"" + command + "\"}";
-
-            try (OutputStream outputStream = connection.getOutputStream()) {
-                byte[] input = data.getBytes("utf-8");
-                outputStream.write(input, 0, input.length);
-            }
-
-            System.out.println("execute_response: " + connection.getResponseCode());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 }

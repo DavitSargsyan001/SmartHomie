@@ -197,6 +197,8 @@ public class Scenarios extends AppCompatActivity {
                 for(String plugURl : plugURLs){
                     ecoMode(plugURl);
                 }
+                //set Nest into eco mode
+                nestAPI.setHvacMode("MANUAL_ECO");
             }
         });
         //Sleep Scenario
@@ -212,6 +214,7 @@ public class Scenarios extends AppCompatActivity {
                 for(String plugURl : plugURLs){
                     turnOffDevice(plugURl);
                 }
+                nestAPI.setHvacMode("COOL");
             }
         });
         //Wake Up Scenario
@@ -225,6 +228,7 @@ public class Scenarios extends AppCompatActivity {
                 for (String plugURL : plugURLs){
                     turnOnDevice(plugURL);
                 }
+                nestAPI.setHvacMode("HEAT");
             }
         });
     }
