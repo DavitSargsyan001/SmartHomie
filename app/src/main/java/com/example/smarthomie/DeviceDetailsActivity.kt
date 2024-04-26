@@ -51,7 +51,7 @@ class DeviceDetailsActivity : AppCompatActivity() {
 
 
 
-        if (device.type == "Smart Light" && device.type == "Smart Plug") {
+        if (device.type == "Smart Light" || device.type == "Smart Plug") {
 
             if (device.type == "Smart Light"){
                 val brightnessControl = findViewById<SeekBar>(R.id.seekBar)

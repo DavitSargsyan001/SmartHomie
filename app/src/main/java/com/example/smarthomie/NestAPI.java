@@ -129,9 +129,11 @@ public class NestAPI {
 
 
     public static void setHvacMode(String mode) {
+
         //Hold last mode that the nest was in
             lastMode = mode;
-         Runnable runnable = new Runnable() {
+        Runnable runnable = new Runnable() {
+
             @Override
             public void run() {
                 try {

@@ -190,11 +190,11 @@ class DeviceDiscoveryActivity : AppCompatActivity() {
                                 val name = lightObject.getString("name")
                                 val uniqueId = lightObject.getString("uniqueid")
                                 val deviceType = lightObject.getString("type")
-                                val typeToAssign = "Smart Device"
+                                var typeToAssign = "Smart Device"
                                 if (deviceType == "On/Off plug-in unit"){
-                                    val typeToAssign = "Smart Plug"
+                                     typeToAssign = "Smart Plug"
                                 } else if (deviceType == "Dimmable light") {
-                                    val typeToAssign = "Smart Light"
+                                   typeToAssign = "Smart Light"
                                 }
 
                                 val deviceDetails = DeviceDetails(
