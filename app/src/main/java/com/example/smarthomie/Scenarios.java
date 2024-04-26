@@ -94,11 +94,11 @@ public class Scenarios extends AppCompatActivity {
                                                 case "Smart Light":
                                                     lightURls.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
                                                     break;
-                                                //If its a smart plug
+                                                 //If its a smart plug
                                                 case "Smart Plug":
                                                     plugURLs.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
                                                     break;
-                                                case "Smart Device":
+                                                case "Smart Device": 
                                                     if(deviceName.contains("plug")){
                                                         plugURLs.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
                                                     } else if (deviceName.contains("light") || deviceName.contains("lamp") ) {
@@ -141,7 +141,7 @@ public class Scenarios extends AppCompatActivity {
         });
 
 
-        //Go back to home page
+    //Go back to home page
         myImageButton = findViewById(R.id.ibHome);
         myImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,7 +165,7 @@ public class Scenarios extends AppCompatActivity {
                     turnOnDevice(plugURL);
                 }
                 nestAPI.turnOnNestDevice();
-            }
+                }
         });
 
         //Away Scenario
@@ -330,12 +330,12 @@ public class Scenarios extends AppCompatActivity {
 
     //Method to dim light for ECO Mode
     private void ecoMode(String url){
-        configureSSL();
-        // Sending request to set eco mode
-        String requestBody = "{\"on\": true, \"bri\": " + ecoBrightness + "}";
-        sendRequest(url, requestBody);
-    }
-    //Method To tunr off device
+            configureSSL();
+            // Sending request to set eco mode
+            String requestBody = "{\"on\": true, \"bri\": " + ecoBrightness + "}";
+            sendRequest(url, requestBody);
+        }
+     //Method To tunr off device
     private void turnOffDevice(String url) {
         configureSSL();
         String requestBody = "{\"on\": false}";
@@ -377,3 +377,4 @@ public class Scenarios extends AppCompatActivity {
         }
     }
 }
+
