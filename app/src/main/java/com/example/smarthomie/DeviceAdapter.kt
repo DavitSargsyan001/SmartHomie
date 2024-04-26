@@ -91,7 +91,9 @@ suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
                     else-> R.drawable.ic_generic_device
                 })
 
-
+                val textColorId = if (device.isSelected) R.color.selected_device_color else R.color.black
+                binding.deviceName.setTextColor(ContextCompat.getColor(itemView.context, textColorId))
+                binding.deviceStatus.setTextColor(ContextCompat.getColor(itemView.context, textColorId))
 
             }
             is DeviceControllableItemBinding -> { // Binding method for My Devices activity
@@ -149,36 +151,25 @@ suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
 
             when (contextType) {
                 AdapterContext.MY_DEVICES -> {
-
                 }
                 AdapterContext.DEVICE_DISCOVERY -> {
+                    /**/
+                    Log.d("DeviceAdapter", "onClick - Initially selected? selected ${device.isSelected}")
                     device.isSelected = !device.isSelected
                     Log.d("DeviceAdapter", "onClick - Device selected state is now ${device.isSelected}")
-                    updateBackgroundColor(device.isSelected)
                     clickListener(device)
                     notifyItemChanged(adapterPosition)
+
                 }
+
                 AdapterContext.MY_DEVICES2-> {
 
                 }
             }
         }
     }
-        private fun updateBackgroundColor(isSelected: Boolean) {
-            if (isSelected) {
-                itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, androidx.browser.R.color.browser_actions_bg_grey))
-                Log.d("DeviceAdapter", "Item is selected, changing color.")
-            } else {
-                itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, androidx.constraintlayout.widget.R.color.button_material_light))
-                Log.d("DeviceAdapter", "Item is unselected, changing color.")
-            }
-        }
 
 }
-
-    private fun performQuickAction(){
-
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder{
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -187,12 +178,23 @@ suspend fun removeDeviceAtPosition(device: DeviceDetails, position: Int) {
             AdapterContext.DEVICE_DISCOVERY -> DeviceItemBinding.inflate(layoutInflater, parent, false)
             AdapterContext.MY_DEVICES2 -> DeviceControllableItem2Binding.inflate(layoutInflater, parent, false)
         }
-        return DeviceViewHolder(binding);
+        return DeviceViewHolder(binding)
 
     }
 
     override fun onBindViewHolder(holder: DeviceViewHolder, position: Int) {
-        holder.bind(devices[position], clickListener)
+        val device = devices[position]  // Retrieve the device at the given position
+        holder.bind(device, clickListener)  // Bind the device data to the holder
+
+        // Log the necessary details about the item being bound
+        Log.d("DeviceAdapter", "Binding view holder at position $position with data: Name=${device.name}, Selected=${device.isSelected}")
+
+        // Additional logging for state checks or conditions
+        if (device.isSelected) {
+            Log.d("DeviceAdapter", "Device ${device.name} at position $position is selected")
+        } else {
+            Log.d("DeviceAdapter", "Device ${device.name} at position $position is not selected")
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

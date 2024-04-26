@@ -59,8 +59,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/devicesRecyclerView"
-        android:layout_width="399dp"
-        android:layout_height="425dp"
+        android:layout_width="398dp"
+        android:layout_height="419dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="80dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,6 +78,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textViewHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tap on devices to select them, Once selected device names would appear in orange"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.467"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.712" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

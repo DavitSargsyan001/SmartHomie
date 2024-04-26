@@ -3,4 +3,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="my_button_color">#FF000000</color>
+    <color name="selected_device_color">#BA4002</color>
 </resources>
