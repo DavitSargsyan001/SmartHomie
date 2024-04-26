@@ -166,6 +166,5 @@ public class PhilipsHueController extends AppCompatActivity {
             return null;
         }
     }
-    }
-
+}
 

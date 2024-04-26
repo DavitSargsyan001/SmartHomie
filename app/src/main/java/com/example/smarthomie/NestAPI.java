@@ -129,7 +129,7 @@ public class NestAPI {
 
 
     public static void setHvacMode(String mode) {
-         Runnable runnable = new Runnable() {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 try {
