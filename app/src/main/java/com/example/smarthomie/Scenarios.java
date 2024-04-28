@@ -2,14 +2,20 @@ package com.example.smarthomie;
 
 
 
+import static android.app.ProgressDialog.show;
+
 import  android.content.Intent;
+
 import android.os.Bundle;
+
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -156,6 +162,7 @@ public class Scenarios extends AppCompatActivity {
         homeScenarioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(Scenarios.this, "Home Scenario Activated",Toast.LENGTH_SHORT).show();
                 //Go through each Light in list to turn on
                 for(String lightURL : lightURls){
                     turnOnDevice(lightURL);
@@ -173,6 +180,7 @@ public class Scenarios extends AppCompatActivity {
         awayScenarioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(Scenarios.this, "Away Scenario Activated",Toast.LENGTH_SHORT).show();
                 //iterate through lights to turn off
                 for(String lightURL : lightURls){
                     turnOffDevice(lightURL);
@@ -189,6 +197,7 @@ public class Scenarios extends AppCompatActivity {
         ecoScenarioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(Scenarios.this, "Eco Mode Activated",Toast.LENGTH_SHORT).show();
                 //iterate through lights to set to eco mode
                 for(String lightURL : lightURls){
                     ecoMode(lightURL);
@@ -206,6 +215,7 @@ public class Scenarios extends AppCompatActivity {
         sleepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(Scenarios.this, "Sleep Scenario Activated",Toast.LENGTH_SHORT).show();
                 //iterate through lights to gradually turn off
                 for(String lightURL : lightURls){
                     decreaseBrightness(lightURL,30);
@@ -222,6 +232,7 @@ public class Scenarios extends AppCompatActivity {
         wakeUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(Scenarios.this, "Wake up Scenario Activated",Toast.LENGTH_SHORT).show();
                 for (String lightURl : lightURls){
                     increaseBrightness(lightURl,30);
                 }
