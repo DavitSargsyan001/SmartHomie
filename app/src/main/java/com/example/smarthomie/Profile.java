@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,26 +14,41 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 
 public class Profile extends AppCompatActivity {
 
     private FirebaseAuth auth;
+    private TextView userEmailTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_page);
 
         auth = FirebaseAuth.getInstance();
+        userEmailTextView = findViewById(R.id.userEmailTextView);
+
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            userEmailTextView.setText(user.getEmail());  // Set the email to the TextView
+        } else {
+            userEmailTextView.setText("No user signed in");  // Handle case where no user is signed in
+        }
 
         ImageButton myImageButton = (ImageButton) findViewById(R.id.ibHome2);
         Button logOutButton = (Button) findViewById(R.id.logout);
-        Button changeEmailButton = (Button) findViewById(R.id.changeEmail);
+        //Button changeEmailButton = (Button) findViewById(R.id.changeEmail);
         Button changePasswordButton = (Button) findViewById(R.id.changePassword);
 
         myImageButton.setOnClickListener(new View.OnClickListener() {
@@ -51,14 +67,15 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        changeEmailButton.setOnClickListener(new View.OnClickListener() {
+        // Change email listener
+       /* changeEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Create an Intent to start the ChangeEmailActivity
                 Intent intent = new Intent(Profile.this, ChangeEmailActivity.class);
                 startActivity(intent); // Start the new activity
             }
-        });
+        }); */
 
         changePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,8 +83,25 @@ public class Profile extends AppCompatActivity {
                 showChangePasswordDialog();
             }
         });
+
+        //steic grdon
+        TextView accountCreationDateTextView = findViewById(R.id.accountCreationDateTextView);
+
+        if (user != null) {
+            // Get user creation timestamp and format it
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+            String creationDate = dateFormat.format(new Date(user.getMetadata().getCreationTimestamp()));
+
+            // Set the formatted date in TextView
+            accountCreationDateTextView.setText("Account Created: " + creationDate);
+        } else {
+            accountCreationDateTextView.setText("No user signed in");
+        }
+
+
     }
 
+// CHANGE PASSWORD FUNCTION
 
     private void showChangePasswordDialog() {
         // Inflate the dialog_change_password.xml layout
@@ -114,6 +148,9 @@ public class Profile extends AppCompatActivity {
                     });
         }
     }
+
+//CHANGE EMAIL FUNCTION
+
 }
 
 
