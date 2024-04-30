@@ -49,6 +49,7 @@
         <activity android:name=".DeviceDetailsActivity"></activity>
         <activity android:name=".MyGroup"></activity>
         <activity android:name=".MyDevicesActivity2"></activity>
+        <activity android:name=".ScenarioSettingsActivity"></activity>
     </application>
 
 </manifest>

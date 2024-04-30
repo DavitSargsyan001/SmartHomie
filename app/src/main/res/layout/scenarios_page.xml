@@ -112,6 +112,17 @@
         app:layout_constraintVertical_bias="0.011"
         app:srcCompat="@drawable/home_duotone" />
 
+    <ImageButton
+        android:id="@+id/ibSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="344dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.011"
+        app:srcCompat="@drawable/settings" />
+
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="411dp"

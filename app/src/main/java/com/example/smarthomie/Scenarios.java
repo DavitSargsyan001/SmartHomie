@@ -1,9 +1,6 @@
 package com.example.smarthomie;
 
-
-
-import static android.app.ProgressDialog.show;
-
+import android.content.Context;
 import  android.content.Intent;
 
 import android.os.Bundle;
@@ -46,6 +43,7 @@ import javax.net.ssl.X509TrustManager;
 
 public class Scenarios extends AppCompatActivity {
     ImageButton myImageButton;
+    ImageButton settingsImageButton;
 
     private String numericID;
 
@@ -54,7 +52,7 @@ public class Scenarios extends AppCompatActivity {
     FirebaseFirestore db;
     int ecoBrightness = 50;
     private List<String> lightURls = new ArrayList<>();
-    private  List<String> plugURLs = new ArrayList<>();
+    private List<String> plugURLs = new ArrayList<>();
     NestAPI nestAPI = new NestAPI();
 
 
@@ -95,19 +93,19 @@ public class Scenarios extends AppCompatActivity {
 
                                         if (deviceType != null) {
                                             // Based on device type separate URL will be made
-                                            switch(deviceType){
+                                            switch (deviceType) {
                                                 //If its light bulb
                                                 case "Smart Light":
                                                     lightURls.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
                                                     break;
-                                                 //If its a smart plug
+                                                //If its a smart plug
                                                 case "Smart Plug":
                                                     plugURLs.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
                                                     break;
-                                                case "Smart Device": 
-                                                    if(deviceName.contains("plug")){
+                                                case "Smart Device":
+                                                    if (deviceName.contains("plug")) {
                                                         plugURLs.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
-                                                    } else if (deviceName.contains("light") || deviceName.contains("lamp") ) {
+                                                    } else if (deviceName.contains("light") || deviceName.contains("lamp")) {
                                                         lightURls.add("https://" + IP + "/api/" + hueBridgeUsername + "/lights/" + numericID + "/state");
                                                     }
                                                     break;
@@ -145,9 +143,18 @@ public class Scenarios extends AppCompatActivity {
                 Log.e("Error", "Error retrieving devices: " + e.getMessage());
             }
         });
+        //Settings Page
+        settingsImageButton = findViewById(R.id.ibSettings);
+        settingsImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent goToSettings = new Intent(Scenarios.this, ScenarioSettingsActivity.class);
+                startActivity(goToSettings);
+            }
+        });
 
 
-    //Go back to home page
+        //Go back to home page
         myImageButton = findViewById(R.id.ibHome);
         myImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,17 +169,17 @@ public class Scenarios extends AppCompatActivity {
         homeScenarioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(Scenarios.this, "Home Scenario Activated",Toast.LENGTH_SHORT).show();
                 //Go through each Light in list to turn on
-                for(String lightURL : lightURls){
+                for (String lightURL : lightURls) {
                     turnOnDevice(lightURL);
                 }
                 //Go trough each plug to turn on
-                for( String plugURL : plugURLs){
+                for (String plugURL : plugURLs) {
                     turnOnDevice(plugURL);
                 }
                 nestAPI.turnOnNestDevice();
-                }
+                Toast.makeText(Scenarios.this, "Home Scenario Enabled", Toast.LENGTH_SHORT).show();
+            }
         });
 
         //Away Scenario
@@ -180,16 +187,16 @@ public class Scenarios extends AppCompatActivity {
         awayScenarioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(Scenarios.this, "Away Scenario Activated",Toast.LENGTH_SHORT).show();
                 //iterate through lights to turn off
-                for(String lightURL : lightURls){
+                for (String lightURL : lightURls) {
                     turnOffDevice(lightURL);
                 }
                 //iterate through plugs to turn off
-                for(String plugURl : plugURLs){
+                for (String plugURl : plugURLs) {
                     turnOffDevice(plugURl);
                 }
                 nestAPI.setHvacMode("OFF");
+                Toast.makeText(Scenarios.this, "Away Scenario Enabled", Toast.LENGTH_SHORT).show();
             }
         });
         //Eco Scenario
@@ -197,83 +204,144 @@ public class Scenarios extends AppCompatActivity {
         ecoScenarioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(Scenarios.this, "Eco Mode Activated",Toast.LENGTH_SHORT).show();
+                boolean anyLightOn = false;
+                boolean anyPlugOn = false;
                 //iterate through lights to set to eco mode
-                for(String lightURL : lightURls){
+                for (String lightURL : lightURls) {
                     ecoMode(lightURL);
                 }
                 //iterate through plugs to set to eco mode
-                for(String plugURl : plugURLs){
+                for (String plugURl : plugURLs) {
                     ecoMode(plugURl);
                 }
                 //set Nest into eco mode
                 nestAPI.setHvacMode("MANUAL_ECO");
+                Toast.makeText(Scenarios.this, "Eco Scenario Enabled", Toast.LENGTH_SHORT).show();
             }
         });
-        //Sleep Scenario
+        // Sleep Scenario
         Button sleepButton = findViewById(R.id.btnSleepScenario);
         sleepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(Scenarios.this, "Sleep Scenario Activated",Toast.LENGTH_SHORT).show();
-                //iterate through lights to gradually turn off
-                for(String lightURL : lightURls){
-                    decreaseBrightness(lightURL,30);
+                // Iterate through lights to gradually turn off
+                for (String lightURL : lightURls) {
+                    decreaseBrightness(lightURL);
                 }
-                //iterate through plugs to turn off
-                for(String plugURl : plugURLs){
+                // Iterate through plugs to turn off
+                for (String plugURl : plugURLs) {
                     turnOffDevice(plugURl);
                 }
-                nestAPI.setHvacMode("COOL");
+                // Set HVAC mode for Sleep Scenario
+                nestAPI.setHvacMode(getHvacModeSleep());
+                // Show toast message indicating Sleep Scenario is enabled
+                Toast.makeText(Scenarios.this, "Sleep Scenario Activated: " + getHvacModeSleep() + " Mode " + getSelectedDurationSleep() + "sec", Toast.LENGTH_SHORT).show();
             }
         });
-        //Wake Up Scenario
+
+        // Wake Up Scenario
         Button wakeUpButton = findViewById(R.id.btnCustomScenario);
         wakeUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(Scenarios.this, "Wake up Scenario Activated",Toast.LENGTH_SHORT).show();
-                for (String lightURl : lightURls){
-                    increaseBrightness(lightURl,30);
+                // Iterate through lights to gradually increase brightness
+                for (String lightURl : lightURls) {
+                    increaseBrightness(lightURl);
                 }
-                for (String plugURL : plugURLs){
+                // Iterate through plugs to turn on
+                for (String plugURL : plugURLs) {
                     turnOnDevice(plugURL);
                 }
-                nestAPI.setHvacMode("HEAT");
+                // Set HVAC mode for Wake Up Scenario
+                nestAPI.setHvacMode(getHvacModeWakeUp());
+                // Show toast message indicating Wake Up Scenario is activated
+                Toast.makeText(Scenarios.this, "Wake up Scenario Activated: " + getHvacModeWakeUp() + " Mode " + getSelectedDurationWakeUp() + "sec" , Toast.LENGTH_SHORT).show();
             }
         });
     }
+    //Method to retrieve cycle duration for Sleep Scenario
+    private int getSelectedDurationSleep() {
+        return new ScenarioSettingsActivity().getSelectedDuration(this, "sleepDurationKey");
+    }
+
+    //Method to retrieve cycle duration for Wake Up Scenario
+    private int getSelectedDurationWakeUp() {
+        return new ScenarioSettingsActivity().getSelectedDuration(this, "wakeUpDurationKey");
+    }
+
+    //Method to retrieve HVAC mode for Sleep Scenario
+    private String getHvacModeSleep() {
+        return new ScenarioSettingsActivity().getSelectedMode(this, "sleepModeKey");
+    }
+
+    //Method to retrieve HVAC mode for Wake Up Scenario
+    private String getHvacModeWakeUp() {
+        return new ScenarioSettingsActivity().getSelectedMode(this, "wakeUpModeKey");
+    }
+
 
     //Gradually decrease brightness for Sleep Scenario
-    private void decreaseBrightness(final String url, final int durationInSeconds){
+    private void decreaseBrightness(final String url) {
         configureSSL();
-        final int numSteps = durationInSeconds;
-        final int initialBrightness = 254;//Maximum
-        final int finalBrightness = 0; //Minimum
-        final int brightnessIncrement = (initialBrightness - finalBrightness) / numSteps;
+        final int durationInSeconds = getSelectedDurationSleep();
+        final int totalDurationMillis = durationInSeconds * 1000; // Convert duration to milliseconds
+        final int initialBrightness = 254; // Maximum
+        final int finalBrightness = 0; // Minimum
 
-        //Request delay in separate thread
+        // Calculate brightness decrement per millisecond to achieve final brightness in the selected duration
+        final double brightnessDecrementPerMillis = (double) (initialBrightness - finalBrightness) / totalDurationMillis;
+
+        // Request delay in separate thread
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for(int i = 0; i < numSteps; i++){
-                    final int brightness = initialBrightness - i * brightnessIncrement;
+                int brightness = initialBrightness;
+                long startTime = System.currentTimeMillis();
+                long previousBrightnessUpdate = startTime;
+                while (brightness > finalBrightness) {
+                    // Calculate elapsed time
+                    long currentTime = System.currentTimeMillis();
+                    long elapsedTime = currentTime - startTime;
 
-                    //Sending delayed request
-                    String requestBody = "{\"on\": true, \"bri\": " + brightness + "}";
-                    sendRequestWithDelay(url, requestBody, i * 1000); // Delay request by i seconds
+                    // Calculate expected brightness based on elapsed time
+                    int newBrightness = initialBrightness - (int) (brightnessDecrementPerMillis * elapsedTime);
+
+                    // Ensure brightness does not go below the final brightness
+                    if (newBrightness < finalBrightness) {
+                        newBrightness = finalBrightness;
+                    }
+
+                    // Update brightness only if it has changed since the last update
+                    if (newBrightness != brightness) {
+                        brightness = newBrightness;
+
+                        // Sending delayed request
+                        String requestBody = "{\"on\": true, \"bri\": " + brightness + "}";
+                        sendRequest(url, requestBody);
+
+                        // Update the time of the last brightness update
+                        previousBrightnessUpdate = currentTime;
+                    }
+
+                    // Delay for a short interval (e.g., 100 milliseconds) between brightness adjustments
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+
+                // Turn off the light after the selected duration
                 String offRequest = "{\"on\": false}";
-                sendRequestWithDelay(url, offRequest, numSteps * 1000); // Delay turning off the light
+                sendRequest(url, offRequest);
             }
         }).start();
     }
-
     // Gradually Increase brightness For wake up Scenario
-    private void increaseBrightness(final String url, final int durationInSeconds) {
+    private void increaseBrightness(final String url) {
         configureSSL();
         // Get Brightness integer
-        final int numSteps = durationInSeconds;
+        final int numSteps = getSelectedDurationWakeUp();
         final int initialBrightness = 1; // Starting brightness
         final int finalBrightness = 254; // Maximum brightness
         final int brightnessIncrement = (finalBrightness - initialBrightness) / numSteps;
