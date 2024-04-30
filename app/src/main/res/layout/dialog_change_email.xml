@@ -1,0 +1,22 @@
+<!-- dialog_change_email.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/etNewEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="New Email"
+        android:inputType="textEmailAddress" />
+
+    <!-- Include if re-authentication is needed -->
+    <EditText
+        android:id="@+id/etPasswordForEmailChange"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Current Password"
+        android:inputType="textPassword" />
+</LinearLayout>

@@ -5,14 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/devicesRecyclerView"
-        android:layout_width="401dp"
-        android:layout_height="503dp"
-        android:layout_marginBottom="164dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="176dp"
+        android:layout_marginBottom="420dp"
+        android:text="Living Room"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/button8"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
         android:id="@+id/imageView6"
@@ -57,6 +60,76 @@
         android:layout_marginEnd="127dp"
         android:layout_marginBottom="59dp"
         android:text="Add a Group"
+        app:layout_constraintBottom_toTopOf="@+id/imageView6"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="85dp"
+        android:layout_height="76dp"
+        android:layout_marginBottom="500dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView6"
+        app:srcCompat="@drawable/living_room_icon_illustration_free_vector"
+        tools:layout_editor_absoluteX="9dp" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="89dp"
+        android:layout_height="104dp"
+        android:layout_marginBottom="332dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView6"
+        app:srcCompat="@drawable/_192020"
+        tools:layout_editor_absoluteX="13dp" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="260dp"
+        android:text="Bedroom"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/button8"
+        app:layout_constraintEnd_toStartOf="@+id/button13" />
+
+    <Button
+        android:id="@+id/button12"
+        android:layout_width="74dp"
+        android:layout_height="41dp"
+        android:layout_marginEnd="84dp"
+        android:layout_marginBottom="116dp"
+        android:text="On"
+        app:layout_constraintBottom_toTopOf="@+id/button13"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/button13"
+        android:layout_width="75dp"
+        android:layout_height="39dp"
+        android:layout_marginEnd="84dp"
+        android:layout_marginBottom="356dp"
+        android:text="On"
+        app:layout_constraintBottom_toTopOf="@+id/imageView6"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/button14"
+        android:layout_width="72dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="112dp"
+        android:text="Off"
+        app:layout_constraintBottom_toTopOf="@+id/button15"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/button15"
+        android:layout_width="68dp"
+        android:layout_height="41dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="356dp"
+        android:text="Off"
         app:layout_constraintBottom_toTopOf="@+id/imageView6"
         app:layout_constraintEnd_toEndOf="parent" />
 
